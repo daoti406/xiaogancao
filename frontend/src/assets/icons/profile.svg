@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4A7C59" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- 甘草根茎 -->
+  <path d="M12 22v-8"/>
+  <!-- 甘草主杆 -->
+  <path d="M12 14c0-1.5.5-3 2-4"/>
+  <!-- 左侧叶片 -->
+  <path d="M12 10c-1.5 1-3 .5-4-1"/>
+  <path d="M11 9c-2.5-1-3.5-2-3.5-3"/>
+  <path d="M9 6c-.5 1.5 0 3 1 4"/>
+  <path d="M10 8c0 1.5-1 2.5-2 3"/>
+  <!-- 右侧叶片 -->
+  <path d="M14 10c1.5 1 3 .5 4-1"/>
+  <path d="M15 9c2.5-1 3.5-2 3.5-3"/>
+  <path d="M17 6c.5 1.5 0 3-1 4"/>
+  <path d="M16 8c0 1.5 1 2.5 2 3"/>
+  <!-- 叶片脉络 -->
+  <path d="M9 7c.5-.5 1-.5 1.5 0"/>
+  <path d="M15 7c-.5-.5-1-.5-1.5 0"/>
+  <!-- 甘草花/果实 -->
+  <circle cx="12" cy="5" r="1" fill="#4A7C59"/>
+  <path d="M12 4v-1"/>
+  <path d="M10 3c1-1 2 0 2 1"/>
+  <path d="M14 3c-1-1-2 0-2 1"/>
+</svg>

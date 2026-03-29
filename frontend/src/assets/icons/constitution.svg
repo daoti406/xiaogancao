@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4A7C59" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- 太极图简化版 -->
+  <circle cx="12" cy="12" r="10"/>
+  <!-- 阴阳分隔线 -->
+  <path d="M12 2v20"/>
+  <path d="M12 2a10 10 0 0 1 0 20"/>
+  <!-- 阳鱼眼睛 -->
+  <circle cx="12" cy="7" r="1.5" fill="#4A7C59"/>
+  <!-- 阴鱼眼睛 -->
+  <circle cx="12" cy="17" r="1.5" fill="#4A7C59"/>
+  <!-- S曲线 -->
+  <path d="M12 2c-2.5 2-4 5-4 10s4 8 8 10" fill="none"/>
+</svg>

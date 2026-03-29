@@ -1,0 +1,147 @@
+/**
+ * 小甘草—AI中医养生顾问主题变量
+ * 温暖的中医养生风格配色
+ */
+
+:root {
+  /* 主色调 - 中医绿 */
+  --primary-color: #4A7C59;
+  --primary-light: #7FA889;
+  --primary-lighter: #A8C9B1;
+  --primary-dark: #3A6247;
+  --primary-darker: #2D4A37;
+
+  /* 图标颜色 */
+  --icon-color: #4A7C59;
+  --icon-color-light: #7FA889;
+
+  /* 辅助色 - 温暖棕 */
+  --secondary-color: #D4A574;
+  --secondary-light: #E5C4A8;
+  --secondary-dark: #B8895A;
+
+  /* 强调色 */
+  --accent-color: #8B9F6E;
+  --accent-warm: #C8956C;
+
+  /* 背景色 */
+  --bg-primary: #FAF8F5;
+  --bg-secondary: #F5F1EB;
+  --bg-card: #FFFFFF;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* 文字颜色 */
+  --text-primary: #2C3E2D;
+  --text-secondary: #5A6B5B;
+  --text-tertiary: #8A9A8B;
+  --text-light: #B5C4B6;
+  --text-white: #FFFFFF;
+
+  /* 边框颜色 */
+  --border-color: #E8E2D9;
+  --border-light: #F0EBE3;
+  --border-dark: #D4CFC5;
+
+  /* 状态颜色 */
+  --success-color: #5D9C59;
+  --success-bg: #E8F5E7;
+  --warning-color: #E6A23C;
+  --warning-bg: #FDF6EC;
+  --error-color: #E65C5C;
+  --error-bg: #FEF0F0;
+  --info-color: #5A9BD5;
+  --info-bg: #ECF5FC;
+
+  /* 体质颜色映射 */
+  --constitution-yangxu: #E89B7C;
+  --constitution-yinxu: #8BC4E8;
+  --constitution-qixu: #E8C87C;
+  --constitution-tanshi: #A8C97C;
+  --constitution-shire: #E87C7C;
+  --constitution-xueyu: #B87CE8;
+  --constitution-qiyu: #7CB8E8;
+  --constitution-tebing: #E87CB8;
+  --constitution-pinghe: #7CE89C;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(44, 62, 45, 0.08);
+  --shadow-md: 0 4px 12px rgba(44, 62, 45, 0.1);
+  --shadow-lg: 0 8px 24px rgba(44, 62, 45, 0.12);
+  --shadow-xl: 0 16px 48px rgba(44, 62, 45, 0.15);
+
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* 字体 */
+  --font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+  --font-family-serif: 'Noto Serif SC', 'Source Han Serif SC', serif;
+
+  /* 字号 */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+
+  /* 行高 */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* 过渡 */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.35s ease;
+
+  /* 动画时长 */
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow: 0.4s;
+  --duration-stagger: 0.1s;
+
+  /* 布局 */
+  --header-height: 60px;
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 64px;
+  --content-max-width: 1200px;
+  --mobile-nav-height: 56px;
+
+  /* z-index */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+}
+
+/* 深色模式（预留） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 可扩展深色模式变量 */
+  }
+}
+
+/* 响应式断点变量 */
+:root {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
