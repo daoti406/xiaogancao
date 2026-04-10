@@ -74,3 +74,9 @@ xiaogancao-rag/.gradio/
 架构/
 启动/
 PROJECT_ANALYSIS.md
+
+# =====================
+# 大型数据文件
+# =====================
+xiaogancao-rag/data/shennong_dataset.json
+xiaogancao-rag/data/shennong_pro.json
