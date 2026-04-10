@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- 脚掌轮廓 - 代表泡脚 -->
+  <path d="M16 44c0-4 3-8 8-10 4-2 8-2 12 0 4 2 8 6 8 10v8c0 2-2 4-4 4H20c-2 0-4-2-4-4v-8z" stroke="#4A7C59" stroke-width="2.5" fill="none"/>
+  <!-- 脚趾 -->
+  <path d="M12 40c-2-2-2-4 0-5s4 1 5 3" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <path d="M18 36c-2-2-3-4-1-6s5 2 5 5" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <path d="M26 34c-2-2-3-5-1-7s5 3 4 6" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <path d="M34 36c-2-2-2-5 0-7s4 3 3 6" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <path d="M42 40c-1-2-1-4 1-5s4 1 4 4" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <!-- 水平线 - 代表水面 -->
+  <path d="M10 50c0 0 8-2 22-2s22 2 22 2" stroke="#4A7C59" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 水波纹 -->
+  <path d="M14 52c2 0 6-1 10 0" stroke="#4A7C59" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M34 52c2 0 6-1 10 0" stroke="#4A7C59" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 脚部穴位点 -->
+  <circle cx="24" cy="46" r="2" fill="#4A7C59"/>
+  <circle cx="32" cy="44" r="2" fill="#4A7C59"/>
+  <circle cx="40" cy="46" r="2" fill="#4A7C59"/>
+</svg>

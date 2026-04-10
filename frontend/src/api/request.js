@@ -56,11 +56,12 @@ request.interceptors.response.use(
       const { status, data } = error.response;
       
       switch (status) {
-        case 401:
+      case 401:
           // 未授权，清除token并跳转登录
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = '/auth';
+          localStorage.removeItem('xiaogancao_token');
+          localStorage.removeItem('xiaogancao_user');
+          // 使用router跳转而不是window.location.href，避免刷新
+          window.location.href = '/#/auth';
           error.message = '登录已过期，请重新登录';
           break;
         case 403:

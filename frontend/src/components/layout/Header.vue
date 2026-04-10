@@ -22,11 +22,11 @@
           <span>智能问诊</span>
         </router-link>
         <router-link to="/wellness" class="nav-item" :class="{ active: $route.path === '/wellness' }">
-          <img :src="gouqi" class="nav-icon" alt="养生" />
+          <img :src="iconWellness" class="nav-icon" alt="养生" />
           <span>养生方案</span>
         </router-link>
         <router-link to="/health" class="nav-item" :class="{ active: $route.path === '/health' }">
-          <img :src="iconRenshen" class="nav-icon" alt="我的" />
+          <img :src="iconProfile" class="nav-icon" alt="我的" />
           <span>健康档案</span>
         </router-link>
       </nav>
@@ -79,11 +79,11 @@ import { User, Document, Bell, SwitchButton } from '@element-plus/icons-vue';
 
 // 图标导入
 import logoSrc from '@/assets/title-logo.png';
-import iconHome from '@/assets/icons/home.svg';
-import iconConstitution from '@/assets/icons/constitution.svg';
-import iconChat from '@/assets/icons/chat.svg';
-import iconWellness from '@/assets/icons/wellness.svg';
-import iconProfile from '@/assets/icons/profile.svg';
+import iconHome from '@/assets/icons/gouqi.svg'; // 枸杞 - 首页
+import iconConstitution from '@/assets/icons/renshen.svg'; // 人参 - 体质辨识
+import iconChat from '@/assets/icons/gancao.svg'; // 甘草 - 智能问诊
+import iconWellness from '@/assets/icons/fuling.svg'; // 茯苓 - 养生方案
+import iconProfile from '@/assets/icons/herb-icon.svg'; // 草药 - 健康档案
 
 const router = useRouter();
 const authStore = useAuthStore();

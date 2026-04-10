@@ -14,6 +14,12 @@ import './styles/animations.css';
 
 const app = createApp(App);
 
+// 全局错误处理，防止未捕获的错误导致页面崩溃
+app.config.errorHandler = (err, instance, info) => {
+  console.error('全局错误:', err);
+  console.error('错误信息:', info);
+};
+
 // 使用Pinia状态管理
 const pinia = createPinia();
 app.use(pinia);

@@ -8,15 +8,15 @@
           <p class="decoration-subtitle">AI中医养生顾问</p>
           <div class="decoration-features">
             <div class="feature-item">
-              <span class="feature-icon">🌿</span>
+              <img src="@/assets/icons/lifestyle-icon.svg" class="feature-icon" alt="" />
               <span>九种体质辨识</span>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">💊</span>
+              <img src="@/assets/icons/wellness.svg" class="feature-icon" alt="" />
               <span>个性化养生方案</span>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">🤖</span>
+              <img src="@/assets/icons/chat-icon.svg" class="feature-icon" alt="" />
               <span>AI智能问诊</span>
             </div>
             <div class="feature-item">
@@ -249,7 +249,8 @@ const handleOAuthLogin = async () => {
 }
 
 .feature-icon {
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .auth-form-container {

@@ -4,6 +4,9 @@ import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// 获取仪表盘数据（需要认证）
+router.get('/dashboard', authenticate, wellnessController.getDashboard);
+
 // 生成养生方案（需要认证）
 router.post('/generate', authenticate, wellnessController.generate);
 

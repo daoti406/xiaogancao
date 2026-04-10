@@ -1,0 +1,28 @@
+每次调试时，建议按以下顺序启动服务（确保依赖就绪）：
+
+1. **Ollama 服务**（本地模型推理）  
+   ```bash
+   ollama serve
+   ```
+   或确认已在后台运行。验证：`ollama list` 能看到 `qwen2:1.5b`。
+2. **构建向量库**（仅首次或知识库更新时需要）  
+   - 主检索库：`python build_vector_db.py`（基于 `shennong_pro.json`）  
+   - 独立知识库：`python build_knowledge_base.py`（基于 `data/tcm_knowledge/` 文档）
+3. **FastAPI Agent 服务**  
+   ```bash
+   python api.py
+   ```
+   等待输出 `Uvicorn running on http://0.0.0.0:8000`。
+4. **Node.js 后端**（若需前端集成）  
+   打开新终端，进入 `backend` 目录：  
+   ```bash
+   cd C:\Users\daoti\Desktop\小甘草\backend
+   pnpm start   # 或 npm start
+   ``
+5. **前端项目**（可选）  
+   ```bash
+   cd 前端项目目录
+   npm run dev ```
+
+**最小测试集**：仅测试 Agent 接口时，只需启动步骤1和3。  
+**常见问题**：若 `/chat/stream` 返回 404，请确保 `api.py` 已重启且路由定义为 `@app.post("/chat/stream")`。

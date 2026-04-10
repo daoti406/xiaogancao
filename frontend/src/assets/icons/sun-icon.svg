@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- 太阳圆盘 -->
+  <circle cx="32" cy="32" r="12" stroke="#4A7C59" stroke-width="2.5" fill="none"/>
+  <!-- 太阳光芒 -->
+  <path d="M32 6v-6M32 58v-6M6 32h-6M58 32h-6" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M13 13l-4-4M55 55l-4-4M13 51l-4 4M55 9l-4 4" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M13 13l4-4M55 55l4-4M13 51l4 4M55 9l4 4" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 太阳内部 -->
+  <circle cx="32" cy="32" r="5" fill="#4A7C59"/>
+</svg>

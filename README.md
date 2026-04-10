@@ -1,7 +1,7 @@
 # 小甘草—AI中医养生顾问
 
 <div align="center">
-  <img src="docs/logo.png" alt="小甘草" width="200">
+  <img src="C:\Users\daoti\Desktop\小甘草\frontend\src\assets\title-logo.png" alt="小甘草" width="200">
   
   <h3>您的中医养生AI助手</h3>
   

@@ -97,6 +97,10 @@ const router = createRouter({
   }
 });
 
+// 防止无限重定向的计数器
+let redirectCount = 0;
+const MAX_REDIRECTS = 5;
+
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
   // 启动进度条
@@ -111,6 +115,13 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     if (!token) {
       // 未登录，重定向到登录页
+      redirectCount++;
+      if (redirectCount > MAX_REDIRECTS) {
+        console.error('检测到无限重定向，重置计数器并停止');
+        redirectCount = 0;
+        next({ path: '/auth' });
+        return;
+      }
       next({
         path: '/auth',
         query: { redirect: to.fullPath }
@@ -124,7 +135,8 @@ router.beforeEach(async (to, from, next) => {
       try {
         await authStore.fetchCurrentUser();
       } catch (error) {
-        // token无效
+        // token无效，重置计数器后重定向
+        redirectCount = 0;
         next({
           path: '/auth',
           query: { redirect: to.fullPath }
@@ -140,6 +152,8 @@ router.beforeEach(async (to, from, next) => {
     return;
   }
 
+  // 成功的导航，重置计数器
+  redirectCount = 0;
   next();
 });
 

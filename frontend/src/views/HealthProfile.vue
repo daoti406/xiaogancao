@@ -26,24 +26,31 @@
     <!-- 统计概览 -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon">💬</div>
+        <img src="@/assets/icons/chat-icon.svg" class="stat-icon" alt="问诊" />
         <div class="stat-content">
           <div class="stat-number">{{ stats.totalChats }}</div>
           <div class="stat-label">问诊次数</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">📋</div>
+        <img src="@/assets/icons/constitution.svg" class="stat-icon" alt="体质检测" />
         <div class="stat-content">
           <div class="stat-number">{{ stats.constitutionRecords }}</div>
           <div class="stat-label">体质检测</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">🍵</div>
+        <img src="@/assets/icons/wellness.svg" class="stat-icon" alt="养生方案" />
         <div class="stat-content">
           <div class="stat-number">{{ stats.hasPlan ? '1' : '0' }}</div>
           <div class="stat-label">养生方案</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <img src="@/assets/icons/diet-icon.svg" class="stat-icon" alt="健康记录" />
+        <div class="stat-content">
+          <div class="stat-number">{{ stats.healthRecords }}</div>
+          <div class="stat-label">健康记录</div>
         </div>
       </div>
     </div>
@@ -56,6 +63,75 @@
       </div>
       <div class="constitution-summary">
         <RadarChart :scores="profile.constitution_scores" height="250px" />
+      </div>
+    </div>
+
+    <!-- 健康指标 -->
+    <div class="section">
+      <div class="section-header">
+        <h3>健康指标</h3>
+        <el-button text @click="addHealthRecord">添加记录</el-button>
+      </div>
+      <div class="health-metrics">
+        <div class="metric-card" v-for="metric in healthMetrics" :key="metric.type">
+          <div class="metric-header">
+            <img :src="metric.icon" class="metric-icon" alt="" />
+            <h4>{{ metric.name }}</h4>
+          </div>
+          <div class="metric-value">{{ metric.value }}</div>
+          <div class="metric-date">{{ metric.date }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 用药记录 -->
+    <div class="section">
+      <div class="section-header">
+        <h3>用药记录</h3>
+        <el-button text @click="addMedication">添加记录</el-button>
+      </div>
+      <div class="medication-list">
+        <div class="medication-item" v-for="med in medications" :key="med.id">
+          <div class="medication-info">
+            <div class="medication-name">{{ med.name }}</div>
+            <div class="medication-dosage">{{ med.dosage }}</div>
+          </div>
+          <div class="medication-period">{{ med.startDate }} 至 {{ med.endDate }}</div>
+        </div>
+        <div class="empty-hint" v-if="medications.length === 0">
+          暂无用药记录
+        </div>
+      </div>
+    </div>
+
+    <!-- 生活习惯 -->
+    <div class="section">
+      <div class="section-header">
+        <h3>生活习惯</h3>
+        <el-button text @click="editLifestyle">编辑</el-button>
+      </div>
+      <div class="lifestyle-grid">
+        <div class="lifestyle-item">
+          <img src="@/assets/icons/exercise-icon.svg" class="lifestyle-icon" alt="" />
+          <div class="lifestyle-content">
+            <h4>运动</h4>
+            <p>{{ lifestyle.exercise }}</p>
+          </div>
+        </div>
+        <div class="lifestyle-item">
+          <img src="@/assets/icons/diet-icon.svg" class="lifestyle-icon" alt="" />
+          <div class="lifestyle-content">
+            <h4>饮食</h4>
+            <p>{{ lifestyle.diet }}</p>
+          </div>
+        </div>
+        <div class="lifestyle-item">
+          <img src="@/assets/icons/sleep-icon.svg" class="lifestyle-icon" alt="" />
+          <div class="lifestyle-content">
+            <h4>睡眠</h4>
+            <p>{{ lifestyle.sleep }}</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -72,7 +148,7 @@
           class="session-item"
           @click="goToSession(session.id)"
         >
-          <div class="session-icon">💬</div>
+          <img src="@/assets/icons/chat.svg" class="session-icon" alt="对话" />
           <div class="session-info">
             <div class="session-title">{{ session.title || '新对话' }}</div>
             <div class="session-time">{{ formatDate(session.updated_at) }}</div>
@@ -102,7 +178,51 @@ const recentSessions = ref([]);
 const stats = ref({
   totalChats: 0,
   constitutionRecords: 0,
-  hasPlan: false
+  hasPlan: false,
+  healthRecords: 0
+});
+
+// 健康指标数据
+const healthMetrics = ref([
+  {
+    type: 'blood_pressure',
+    name: '血压',
+    value: '120/80 mmHg',
+    date: '2024-01-01',
+    icon: new URL('@/assets/icons/water-icon.svg', import.meta.url).href
+  },
+  {
+    type: 'blood_sugar',
+    name: '血糖',
+    value: '5.6 mmol/L',
+    date: '2024-01-01',
+    icon: new URL('@/assets/icons/water-icon.svg', import.meta.url).href
+  },
+  {
+    type: 'weight',
+    name: '体重',
+    value: '65 kg',
+    date: '2024-01-01',
+    icon: new URL('@/assets/icons/exercise-icon.svg', import.meta.url).href
+  }
+]);
+
+// 用药记录
+const medications = ref([
+  {
+    id: 1,
+    name: '板蓝根颗粒',
+    dosage: '一次1袋，一日3次',
+    startDate: '2024-01-01',
+    endDate: '2024-01-07'
+  }
+]);
+
+// 生活习惯
+const lifestyle = ref({
+  exercise: '每周3次，每次30分钟',
+  diet: '清淡饮食，多吃蔬菜水果',
+  sleep: '每天7-8小时'
 });
 
 const constitutionIcon = computed(() => 
@@ -121,7 +241,7 @@ const formatDate = (dateStr) => {
 
 const fetchDashboard = async () => {
   try {
-    const res = await request.get('/health/dashboard');
+    const res = await request.get('/wellness/dashboard');
     profile.value = res.data.user;
     recentSessions.value = res.data.recentSessions || [];
     stats.value = res.data.stats || stats.value;
@@ -132,6 +252,18 @@ const fetchDashboard = async () => {
 
 const editProfile = () => {
   // TODO: 实现编辑资料功能
+};
+
+const addHealthRecord = () => {
+  // TODO: 实现添加健康记录功能
+};
+
+const addMedication = () => {
+  // TODO: 实现添加用药记录功能
+};
+
+const editLifestyle = () => {
+  // TODO: 实现编辑生活习惯功能
 };
 
 const goToReport = () => {
@@ -147,7 +279,11 @@ const goToSession = (sessionId) => {
 };
 
 onMounted(() => {
-  fetchDashboard();
+  try {
+    fetchDashboard();
+  } catch (err) {
+    console.error('获取仪表盘数据失败:', err);
+  }
 });
 </script>
 
@@ -229,7 +365,8 @@ onMounted(() => {
 }
 
 .stat-icon {
-  font-size: 32px;
+  width: 32px;
+  height: 32px;
 }
 
 .stat-number {
@@ -288,7 +425,9 @@ onMounted(() => {
 }
 
 .session-icon {
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .session-info {
@@ -311,9 +450,130 @@ onMounted(() => {
   padding: var(--spacing-lg);
 }
 
+/* 健康指标样式 */
+.health-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.metric-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.metric-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.metric-value {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.metric-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+}
+
+/* 用药记录样式 */
+.medication-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.medication-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.medication-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.medication-dosage {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.medication-period {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* 生活习惯样式 */
+.lifestyle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.lifestyle-item {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.lifestyle-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.lifestyle-content h4 {
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-md);
+}
+
+.lifestyle-content p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .health-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .lifestyle-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .medication-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .medication-period {
+    align-self: flex-end;
   }
 }
 </style>

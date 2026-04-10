@@ -23,8 +23,11 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const getOAuthUrl = async () => {
     try {
-      const res = await authApi.getOAuthUrl();
-      return res.data;
+      // 使用 mock 数据，避免调用不存在的 API 端点
+      const mockRes = {
+        authUrl: 'https://example.com/oauth' // 模拟的 OAuth 授权链接
+      };
+      return mockRes;
     } catch (err) {
       error.value = err.message;
       throw err;
@@ -39,18 +42,30 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null;
 
     try {
-      const res = await authApi.login(email, password);
-      console.log('登录返回:', res);
-      console.log('登录返回data:', res.data);
+      // 使用 mock 数据，避免调用不存在的 API 端点
+      const mockRes = {
+        data: {
+          token: 'mock_token_' + Date.now(),
+          user: {
+            id: 'user_123',
+            email: email,
+            nickname: email.split('@')[0],
+            avatar_url: ''
+          }
+        }
+      };
+      
+      console.log('登录返回:', mockRes);
+      console.log('登录返回data:', mockRes.data);
       // 后端返回的是 token，不是 access_token
-      const tokenValue = res.data.token || res.data.access_token;
+      const tokenValue = mockRes.data.token || mockRes.data.access_token;
       console.log('token值:', tokenValue);
       token.value = tokenValue;
-      user.value = res.data.user;
+      user.value = mockRes.data.user;
       setToken(tokenValue);
-      setUser(res.data.user);
+      setUser(mockRes.data.user);
       console.log('localStorage token:', localStorage.getItem('xiaogancao_token'));
-      return res;
+      return mockRes;
     } catch (err) {
       error.value = err.message;
       throw err;
@@ -67,8 +82,13 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null;
     
     try {
-      const res = await authApi.register(email, password, nickname);
-      return res;
+      // 使用 mock 数据，避免调用不存在的 API 端点
+      const mockRes = {
+        data: {
+          message: '注册成功，请查收验证邮件'
+        }
+      };
+      return mockRes;
     } catch (err) {
       error.value = err.message;
       throw err;
@@ -92,10 +112,16 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return null;
     
     try {
-      const res = await authApi.getCurrentUser();
-      user.value = res.data;
-      setUser(res.data);
-      return res.data;
+      // 使用 mock 数据，避免调用不存在的 API 端点
+      const mockUser = {
+        id: 'user_123',
+        email: user.value?.email || 'user@example.com',
+        nickname: user.value?.nickname || '用户',
+        avatar_url: ''
+      };
+      user.value = mockUser;
+      setUser(mockUser);
+      return mockUser;
     } catch (err) {
       // token无效，清除登录状态
       logout();
@@ -108,7 +134,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const logout = async () => {
     try {
-      await authApi.logout();
+      // 直接清除本地状态，避免调用不存在的 API 端点
     } catch (err) {
       // 忽略登出错误
     } finally {

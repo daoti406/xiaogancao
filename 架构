@@ -1,0 +1,76 @@
+小甘草 AI Agent 项目任务清单（Task List）
+阶段 0：环境准备与基础设施
+0.1 创建 Python 虚拟环境，安装 FastAPI、Uvicorn、LangChain、LangChain-Community、Transformers、PEFT、ChromaDB、Sentence-Transformers 等依赖
+0.2 创建 agent-service/ 目录结构（agents/, tools/, models/, rag/, memory/, utils/）
+0.3 配置环境变量文件 .env（API 密钥、数据库连接、模型路径等）
+0.4 编写 requirements.txt 并锁定版本
+阶段 1：工具函数开发（纯 Python，不依赖 LLM）
+1.1 实现 get_user_constitution(user_id)：调用 Supabase 或 Node.js API 获取用户体质类型
+1.2 实现 generate_wellness_plan(constitution)：先返回 mock JSON，后续改为调用 LLM 生成
+1.3 实现 search_tcm_knowledge(query)：先返回固定文本，后续接入 RAG
+1.4 实现 get_weather_solar_term(city)：调用天气 API，返回天气和节气
+1.5 实现 create_reminder(user_id, content, time)：调用 Node.js 提醒接口或直接写 Supabase
+1.6 实现 analyze_health_trend(user_id)：查询历史体质记录，简单分析趋势
+1.7 为每个工具编写单元测试（if __name__ == "__main__" 测试代码）
+测试功能未完成！2026年4月5日
+阶段 2：临时 LLM 与基础 Agent 搭建
+2.1 选择一个临时 LLM（推荐 Qwen-1.8B-Chat），编写加载代码
+2.2 设计 ReAct Prompt 模板（中医养生专用格式）
+2.3 使用 create_react_agent 创建 Agent，绑定阶段 1 的工具（至少 2 个）
+2.4 使用 AgentExecutor 测试命令行交互，确保 Agent 能正确调用工具
+2.5 记录 Agent 中间步骤（思考-行动-观察），为可视化做准备
+
+阶段 3：FastAPI 服务封装
+基于 LangChain 官方的 create_react_agent + AgentExecutor 的 FastAPI 封装
+3.1 创建 FastAPI 应用，定义 /health 健康检查接
+3.2 定义请求模型 ChatRequest(user_id, message) 和响应模型 ChatResponse(reply)
+3.3 实现 POST /chat 接口，内部调用 AgentExecutor，返回最终答案
+3.4 添加 CORS 中间件，允许前端调用
+3.5 添加错误处理和日志（try-except，记录异常）
+3.6 启动服务并用 Postman 测试
+阶段 4：与 Node.js 后端集成
+4.1 在 Node.js 项目中安装 axios
+4.2 找到原有的聊天路由文件（如 chat.js），注释掉 Dify 调用代码
+2026年4月6日完成到这儿
+4.3 编写 callAgent(userId, message) 函数，调用 http://localhost:8000/chat
+4.4 重启 Node 服务，前端发送消息验证整链路
+4.5 处理超时和错误降级（Agent 服务不可用时返回友好提示）
+
+阶段 5：思考过程可视化（前端 + 后端流式）
+5.1 修改后端 POST /chat 接口，支持流式响应（Server-Sent Events 或 WebSocket）
+5.2 在 AgentExecutor 执行过程中，每完成一个 ReAct 步骤就 yield 中间状态
+5.3 前端新增组件 ReactSteps.vue，接收流式数据并渲染为时间轴或卡片
+5.4 将中间步骤与最终答案一同展示
+阶段 6：RAG 知识库（ChromaDB + 自训嵌入模型）
+6.1 准备中医知识文档（txt/pdf），放入 data/tcm_knowledge/ 目录
+6.2 编写文档加载器（DirectoryLoader）和文本分割器（RecursiveCharacterTextSplitter）
+6.3 加载自训嵌入模型（HuggingFaceEmbeddings）
+6.4 创建 ChromaDB 向量库，将文档块嵌入并存储（持久化到磁盘）
+6.5 实现 search_tcm_knowledge 工具：使用 RetrievalQA 链从向量库检索并回答
+6.6 测试 RAG 效果，调整 chunk_size 和检索参数
+
+阶段 7：主动提醒（定时任务 + Agent 生成内容）
+7.1 在 Node.js 后端安装 node-cron
+7.2 编写定时任务（如每天早 8 点），调用 Agent 服务的 /reminder/generate 接口
+7.3 在 Agent 服务中新增 POST /reminder/generate，接收 user_id，调用养生方案 Agent 生成提醒内容
+7.4 将生成的提醒内容通过 create_reminder 工具写入数据库，并调用推送服务（可选）
+7.5 前端展示提醒列表，用户可确认或修改
+阶段 8：自训模型替换（Qwen-7B + LoRA）
+8.1 编写 models/local_llm.py，实现 load_qwen_lora(base_path, adapter_path)
+8.2 使用 4-bit 量化加载，减少显存占用
+8.3 在 Agent 创建处将临时 LLM 替换为自训模型
+8.4 测试自训模型对中医 Prompt 的响应质量，微调 Prompt 模板
+8.5 对比临时模型与自训模型的效果，记录改进点
+
+阶段 9：多 Agent 协作（可选，进阶）
+9.1 定义意图分类规则（关键词或小模型分类）
+9.2 创建主路由 Agent，根据意图返回“应由哪个子 Agent 处理”
+9.3 拆分出专职的体质分析 Agent 和养生方案 Agent（共享工具集但不同 Prompt）
+9.4 实现子 Agent 的调用与结果汇总
+9.5 测试多 Agent 协作的准确性和延迟
+阶段 10：部署与文档
+10.1 编写项目 README，包含架构图（可用文字描述）、快速启动步骤、环境变量说明
+10.2 将 Agent 服务部署到云服务器（或使用 Railway/Render 免费层）
+10.3 修改 Node.js 中的 Agent 地址为线上地址
+10.4 编写技术博客，分享 Agent 开发经验和踩坑记录
+10.5 录制演示视频（2-3 分钟），展示对话、可视化步骤、主动提醒

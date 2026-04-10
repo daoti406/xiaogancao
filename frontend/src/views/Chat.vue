@@ -17,10 +17,11 @@
         <div class="chat-title" v-if="chatStore.currentSession">
           {{ chatStore.currentSession.title }}
         </div>
-        <!-- 数字人控制按钮 -->
-        <button class="avatar-toggle-btn" @click="showDigitalHuman = !showDigitalHuman">
-          {{ showDigitalHuman ? '👤' : '🤖' }} 数字人
-        </button>
+        <div class="chat-actions">
+          <el-button size="small" @click="clearChat" icon="Delete">
+            清空
+          </el-button>
+        </div>
       </div>
 
       <!-- 对话内容区 -->
@@ -30,16 +31,25 @@
           ref="messageListRef"
           :messages="chatStore.messages"
           @send="handleSendMessage"
+          @add-reminder="handleAddReminder"
         />
+      </div>
 
-        <!-- 数字人面板 -->
-        <div class="digital-human-panel" :class="{ visible: showDigitalHuman }">
-          <DigitalHuman
-            ref="digitalHumanRef"
-            :autoSpeak="autoSpeak"
-            @voice-change="handleVoiceChange"
-            @speaking-change="handleSpeakingChange"
-          />
+      <!-- 快捷问题区域 -->
+      <div class="quick-questions" v-if="showQuickQuestions">
+        <div class="quick-header">
+          <span class="quick-icon">💡</span>
+          <span>常见问题</span>
+        </div>
+        <div class="quick-bubbles">
+          <button
+            v-for="question in quickQuestions"
+            :key="question"
+            class="quick-bubble"
+            @click="handleQuickQuestion(question)"
+          >
+            {{ question }}
+          </button>
         </div>
       </div>
 
@@ -48,95 +58,110 @@
         ref="messageInputRef"
         :sending="chatStore.streaming"
         @send="handleSendMessage"
+        @focus="showQuickQuestions = true"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
 import { useChatStore } from '@/stores/chat';
-import { ElMessageBox } from 'element-plus';
+import { useConstitutionStore } from '@/stores/constitution';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import { Delete } from '@element-plus/icons-vue';
 import SessionSidebar from '@/components/chat/SessionSidebar.vue';
 import MessageList from '@/components/chat/MessageList.vue';
 import MessageInput from '@/components/chat/MessageInput.vue';
-import DigitalHuman from '@/components/chat/DigitalHuman.vue';
-import digitalHumanService from '@/utils/digitalHumanService';
 
+const router = useRouter();
 const chatStore = useChatStore();
+const constitutionStore = useConstitutionStore();
 
 const messageListRef = ref(null);
 const messageInputRef = ref(null);
-const digitalHumanRef = ref(null);
-const showDigitalHuman = ref(true); // 默认显示数字人
-const autoSpeak = ref(true); // 自动语音开关
+const showQuickQuestions = ref(true); // 显示快捷问题
 
-let lastMessageCount = 0;
+// 快捷问题列表
+const quickQuestions = [
+  '最近睡不好怎么办？',
+  '感觉最近很累',
+  '眼睛干涩怎么办？',
+  '最近胃口不好',
+  '经常头晕怎么回事？',
+  '手脚冰凉怎么调理？'
+];
 
-// 设置数字人服务回调
-digitalHumanService.setCallbacks({
-  onStart: () => {
-    digitalHumanRef.value?.startSpeaking();
-  },
-  onEnd: () => {
-    digitalHumanRef.value?.stopSpeaking();
-  },
-  onError: (error) => {
-    console.error('数字人错误:', error);
-    digitalHumanRef.value?.stopSpeaking();
-  }
-});
-
-// 监听新消息，触发语音朗读和数字人动画
-watch(
-  () => chatStore.messages.length,
-  () => {
-    const messages = chatStore.messages;
-    if (!messages.length) return;
-
-    // 获取最新消息
-    const latestMessage = messages[messages.length - 1];
-
-    // 如果是助手回复且未朗读过
-    if (
-      latestMessage.role === 'assistant' &&
-      latestMessage.content &&
-      !latestMessage.spoken
-    ) {
-      // 调用语音合成（会自动驱动数字人动画）
-      digitalHumanService.speak(latestMessage.content);
-
-      // 标记为已朗读
-      nextTick(() => {
-        latestMessage.spoken = true;
-      });
-    }
-
-    lastMessageCount = messages.length;
-  }
-);
-
-// 语音开关变化
-const handleVoiceChange = (enabled) => {
-  autoSpeak.value = enabled;
+// 处理快捷问题
+const handleQuickQuestion = (question) => {
+  handleSendMessage(question);
+  showQuickQuestions.value = false;
 };
 
-// 说话状态变化
-const handleSpeakingChange = (speaking) => {
-  // 可以在这里处理其他 UI 状态
+// 处理添加提醒
+const handleAddReminder = async (content) => {
+  try {
+    // 跳转到提醒页面并传递建议内容
+    router.push({
+      path: '/reminders',
+      query: { suggestion: content }
+    });
+  } catch (err) {
+    ElMessage.error('添加提醒失败');
+  }
+};
+
+// 清空对话
+const clearChat = async () => {
+  try {
+    await ElMessageBox.confirm('确定清空当前对话吗？', '提示', {
+      type: 'warning'
+    });
+    await chatStore.clearMessages();
+    ElMessage.success('对话已清空');
+  } catch {
+    // 取消清空
+  }
+};
+
+// 添加开场白
+const addGreeting = async () => {
+  // 检查是否已经有消息，如果没有则添加开场白
+  if (chatStore.messages.length === 0) {
+    const greetingMessage = {
+      id: Date.now(),
+      role: 'assistant',
+      content: '您好！我是小甘草智能助手，很高兴为您提供健康咨询服务。请问有什么可以帮助您的吗？',
+      timestamp: new Date().toISOString(),
+      streaming: false
+    };
+    chatStore.messages.push(greetingMessage);
+  }
 };
 
 onMounted(async () => {
-  await chatStore.fetchSessions();
+  try {
+    await chatStore.fetchSessions();
 
-  // 如果有会话，选择第一个
-  if (chatStore.sessions.length > 0) {
-    await chatStore.selectSession(chatStore.sessions[0].id);
+    // 如果有会话，选择第一个
+    if (chatStore.sessions.length > 0) {
+      await chatStore.selectSession(chatStore.sessions[0].id);
+    }
+    
+    // 添加开场白
+    await nextTick();
+    addGreeting();
+  } catch (err) {
+    console.error('获取会话列表失败:', err);
   }
 });
 
 const handleCreateSession = async () => {
   await chatStore.createSession();
+  // 新会话添加开场白
+  await nextTick();
+  addGreeting();
 };
 
 const handleSelectSession = async (sessionId) => {
@@ -173,6 +198,8 @@ const handleSendMessage = async (message) => {
 .sidebar {
   width: 280px;
   border-right: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .chat-main {
@@ -180,6 +207,10 @@ const handleSendMessage = async (message) => {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background: var(--bg-card);
+  border-radius: 12px;
+  margin: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* 顶部栏 */
@@ -188,8 +219,9 @@ const handleSendMessage = async (message) => {
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--bg-card);
+  background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
+  border-radius: 12px 12px 0 0;
 }
 
 .chat-title {
@@ -198,75 +230,82 @@ const handleSendMessage = async (message) => {
   color: var(--text-primary);
 }
 
-/* 数字人切换按钮 */
-.avatar-toggle-btn {
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid #E8E2D9;
-  background: #fff;
-  color: #4A7C59;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.chat-actions {
   display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.avatar-toggle-btn:hover {
-  background: #4A7C59;
-  color: #fff;
-  border-color: #4A7C59;
+  gap: var(--spacing-sm);
 }
 
 /* 对话内容区 */
 .chat-content {
   flex: 1;
-  display: flex;
   overflow: hidden;
-  position: relative;
+  padding: var(--spacing-lg);
 }
 
-/* 数字人面板 */
-.digital-human-panel {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 100;
+/* 快捷问题区域 */
+.quick-questions {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.quick-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.quick-icon {
+  font-size: 14px;
+}
+
+.quick-bubbles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.quick-bubble {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border: none;
+  border-radius: 20px;
+  font-size: var(--font-size-sm);
+  color: #2E7D32;
+  cursor: pointer;
   transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateX(20px);
-  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.digital-human-panel.visible {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-
-/* 桌面端数字人面板样式 */
-@media (min-width: 1024px) {
-  .chat-content {
-    padding-right: 304px; /* 为数字人面板留出空间 */
-  }
-
-  .digital-human-panel {
-    position: static;
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-    flex-shrink: 0;
-    width: 280px;
-    height: 350px;
-    margin: 12px;
-    margin-left: 0;
-  }
+.quick-bubble:hover {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 768px) {
   .chat-page {
     height: calc(100vh - var(--header-height) - var(--mobile-nav-height));
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .chat-main {
+    flex: 1;
+    margin: 0;
+    border-radius: 0;
   }
 
   .chat-header {
@@ -277,28 +316,13 @@ const handleSendMessage = async (message) => {
     font-size: var(--font-size-md);
   }
 
-  .avatar-toggle-btn {
-    font-size: 12px;
-    padding: 4px 8px;
-  }
-
   .chat-content {
-    padding-right: 0;
-  }
-
-  .digital-human-panel {
-    position: fixed;
-    top: auto;
-    bottom: 80px;
-    right: 12px;
-    left: 12px;
-    width: auto !important;
-    height: 240px !important;
+    padding: var(--spacing-md);
   }
 
   /* 消息气泡移动端 */
   .message-bubble {
-    max-width: 80%;
+    max-width: 85%;
   }
 }
 </style>

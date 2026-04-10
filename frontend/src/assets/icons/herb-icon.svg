@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- 中草药/植物图案 -->
+  <!-- 主茎 -->
+  <path d="M32 60V24" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左边大叶子 -->
+  <path d="M32 28c-10-2-16-10-14-20" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 右边大叶子 -->
+  <path d="M32 24c10-2 16-10 14-20" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 左边小叶子 -->
+  <path d="M32 38c-6-2-10-7-8-14" stroke="#4A7C59" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 右边小叶子 -->
+  <path d="M32 34c6-2 10-7 8-14" stroke="#4A7C59" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 根部 -->
+  <path d="M28 60c0-2 2-4 4-4s4 2 4 4" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <!-- 花蕾/果实 -->
+  <circle cx="32" cy="14" r="4" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <!-- 叶子上的纹理 -->
+  <path d="M24 22c2-4 4-6 8-6" stroke="#4A7C59" stroke-width="1" stroke-linecap="round" fill="none"/>
+  <path d="M40 22c-2-4-4-6-8-6" stroke="#4A7C59" stroke-width="1" stroke-linecap="round" fill="none"/>
+</svg>

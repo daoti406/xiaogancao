@@ -1,7 +1,7 @@
 <template>
   <div class="not-found-page">
     <div class="not-found-content">
-      <div class="error-icon">🌿</div>
+      <img src="@/assets/icons/herb-icon.svg" class="error-icon" alt="" />
       <h1>404</h1>
       <h2>页面未找到</h2>
       <p>您访问的页面不存在或已被移除</p>
@@ -41,7 +41,8 @@ const goBack = () => {
 }
 
 .error-icon {
-  font-size: 80px;
+  width: 80px;
+  height: 80px;
   margin-bottom: var(--spacing-lg);
   opacity: 0.6;
 }

@@ -1,22 +1,32 @@
 import express from 'express';
-import * as chatController from '../controllers/chatController.js';
-import { authenticate } from '../middleware/auth.js';
+import axios from 'axios';          // 正确导入 axios
+// import * as chatController from '../controllers/chatController.js'; // 如果未使用可注释
+// import { authenticate } from '../middleware/auth.js';               // 未使用也可注释
 
-const router = express.Router();
+const router = express.Router();    // 创建路由实例
 
-// 创建会话（需要认证）
-router.post('/sessions', authenticate, chatController.createSession);
+const AGENT_URL = process.env.AGENT_SERVICE_URL || 'http://localhost:8000';
 
-// 获取会话列表（需要认证）
-router.get('/sessions', authenticate, chatController.getSessions);
-
-// 删除会话（需要认证）
-router.delete('/sessions/:id', authenticate, chatController.deleteSession);
-
-// 获取会话历史消息（需要认证）
-router.get('/sessions/:id/messages', authenticate, chatController.getMessages);
-
-// 发送消息（流式响应，需要认证）
-router.post('/message', authenticate, chatController.streamMessage);
+// 注意：路由路径根据你的需求，通常为 '/chat' 或 '/message'
+router.post('/message', async (req, res) => {
+    const { userId, message } = req.body;
+    if (!message) {
+        return res.status(400).json({ error: '消息不能为空' });
+    }
+    try {
+        const response = await axios.post(`${AGENT_URL}/api/chat`, {
+            user_id: userId,
+            message: message
+        }, {
+            timeout: 30000   // 可选：设置超时
+        });
+        // 假设 Agent 返回格式为 { reply: "..." }，根据实际情况调整
+        res.json({ reply: response.data.reply });
+    } catch (error) {
+        console.error('Error fetching chat response:', error.message);
+        // 可根据 error.response 状态码返回更精确的错误
+        res.status(500).json({ error: 'Failed to fetch chat response' });
+    }
+});
 
 export default router;

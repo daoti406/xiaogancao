@@ -1,0 +1,9 @@
+参数	值	说明
+MODEL_NAME	BAAI/bge-small-zh-v1.5	基础嵌入模型
+EPOCHS	2	训练轮数（清洗数据后只跑了 1 个 epoch）
+BATCH_SIZE	32	批次大小
+LEARNING_RATE	2e-5	学习率
+WARMUP_STEPS	500	预热步数
+MAX_SENTENCE_LENGTH	512	最大输入长度（token）
+loss	MultipleNegativesRankingLoss	对比学习损失（替换了原来的 CosineSimilarityLoss）
+训练数据	data/shennong_pro.json	清洗后的专业问答对（约 10 万条）

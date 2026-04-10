@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- 日历边框 -->
+  <rect x="8" y="12" width="48" height="44" rx="4" stroke="#4A7C59" stroke-width="2.5" fill="none"/>
+  <!-- 日历顶部 -->
+  <path d="M8 20h48" stroke="#4A7C59" stroke-width="2.5"/>
+  <!-- 日历环 -->
+  <path d="M20 8v8M44 8v8" stroke="#4A7C59" stroke-width="3" stroke-linecap="round"/>
+  <!-- 日历格子 -->
+  <path d="M16 32h8M16 40h8M16 48h8" stroke="#4A7C59" stroke-width="2" stroke-linecap="round"/>
+  <path d="M28 32h8M28 40h8M28 48h8" stroke="#4A7C59" stroke-width="2" stroke-linecap="round"/>
+  <path d="M40 32h8M40 40h8M40 48h8" stroke="#4A7C59" stroke-width="2" stroke-linecap="round"/>
+  <!-- 当天标记 -->
+  <circle cx="20" cy="28" r="3" fill="#4A7C59"/>
+</svg>

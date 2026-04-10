@@ -14,7 +14,8 @@
         size="small"
         @click="addQuickReminder(quick)"
       >
-        {{ quick.icon }} {{ quick.title }}
+        <img :src="quick.icon" class="btn-icon" alt="" />
+        {{ quick.title }}
       </el-button>
     </div>
 
@@ -33,7 +34,7 @@
         :key="reminder.id"
         class="reminder-item"
       >
-        <div class="reminder-icon">{{ getTypeIcon(reminder.type) }}</div>
+        <img :src="getTypeIcon(reminder.type)" class="reminder-icon-img" alt="" />
         <div class="reminder-info">
           <div class="reminder-header">
             <h4>{{ reminder.title }}</h4>
@@ -60,7 +61,7 @@
       </div>
 
       <div class="empty-state" v-if="reminders.length === 0">
-        <div class="empty-icon">📅</div>
+        <img src="@/assets/icons/calendar-icon.svg" class="empty-icon" alt="" />
         <h3>暂无提醒</h3>
         <p>添加养生提醒，帮助您养成健康习惯</p>
       </div>
@@ -80,13 +81,14 @@
       >
         <el-form-item label="类型" prop="type">
           <el-select v-model="formData.type" placeholder="选择提醒类型">
-            <el-option 
+            <el-option
               v-for="type in reminderTypes"
               :key="type.value"
               :label="type.label"
               :value="type.value"
             >
-              <span>{{ type.icon }} {{ type.label }}</span>
+              <img :src="type.icon" class="select-icon" alt="" />
+              <span>{{ type.label }}</span>
             </el-option>
           </el-select>
         </el-form-item>
@@ -151,19 +153,19 @@ const formRules = {
 };
 
 const reminderTypes = [
-  { value: 'solar_term', label: '节气养生', icon: '🌿' },
-  { value: 'diet', label: '饮食建议', icon: '🍎' },
-  { value: 'sleep', label: '作息提醒', icon: '🌙' },
-  { value: 'exercise', label: '运动提醒', icon: '🏃' },
-  { value: 'acupoint', label: '穴位保健', icon: '💆' }
+  { value: 'solar_term', label: '节气养生', icon: new URL('@/assets/icons/lifestyle-icon.svg', import.meta.url).href },
+  { value: 'diet', label: '饮食建议', icon: new URL('@/assets/icons/diet-icon.svg', import.meta.url).href },
+  { value: 'sleep', label: '作息提醒', icon: new URL('@/assets/icons/sleep-icon.svg', import.meta.url).href },
+  { value: 'exercise', label: '运动提醒', icon: new URL('@/assets/icons/exercise-icon.svg', import.meta.url).href },
+  { value: 'acupoint', label: '穴位保健', icon: new URL('@/assets/icons/acupoint-icon.svg', import.meta.url).href }
 ];
 
 // 快捷提醒预设
 const quickReminders = [
-  { title: '早起喝温水', content: '起床后喝一杯温水，帮助排毒养颜', time: '07:00', type: 'diet', icon: '💧' },
-  { title: '午间揉腹', content: '午餐后30分钟，顺时针揉腹100圈，促进消化', time: '12:30', type: 'acupoint', icon: '👐' },
-  { title: '睡前泡脚', content: '睡前30分钟泡脚15-20分钟，改善睡眠', time: '21:30', type: 'sleep', icon: '🦶' },
-  { title: '八段锦', content: '练习八段锦功法，强身健体', time: '06:30', type: 'exercise', icon: '🧘' }
+  { title: '早起喝温水', content: '起床后喝一杯温水，帮助排毒养颜', time: '07:00', type: 'diet', icon: new URL('@/assets/icons/water-icon.svg', import.meta.url).href },
+  { title: '午间揉腹', content: '午餐后30分钟，顺时针揉腹100圈，促进消化', time: '12:30', type: 'acupoint', icon: new URL('@/assets/icons/hand-icon.svg', import.meta.url).href },
+  { title: '睡前泡脚', content: '睡前30分钟泡脚15-20分钟，改善睡眠', time: '21:30', type: 'sleep', icon: new URL('@/assets/icons/foot-icon.svg', import.meta.url).href },
+  { title: '八段锦', content: '练习八段锦功法，强身健体', time: '06:30', type: 'exercise', icon: new URL('@/assets/icons/exercise-icon.svg', import.meta.url).href }
 ];
 
 // 请求通知权限
@@ -260,7 +262,7 @@ const addQuickReminder = (quick) => {
   dialogVisible.value = true;
 };
 
-const getTypeIcon = (type) => reminderTypes.find(t => t.value === type)?.icon || '📅';
+const getTypeIcon = (type) => reminderTypes.find(t => t.value === type)?.icon || new URL('@/assets/icons/calendar-icon.svg', import.meta.url).href;
 const getTypeName = (type) => reminderTypes.find(t => t.value === type)?.label || type;
 
 const fetchReminders = async () => {
@@ -343,9 +345,13 @@ const deleteReminder = async (id) => {
 };
 
 onMounted(() => {
-  fetchReminders();
-  requestNotificationPermission();
-  startReminderCheck();
+  try {
+    fetchReminders();
+    requestNotificationPermission();
+    startReminderCheck();
+  } catch (err) {
+    console.error('初始化提醒失败:', err);
+  }
 });
 
 onUnmounted(() => {
@@ -401,8 +407,7 @@ onUnmounted(() => {
   border-radius: var(--radius-lg);
 }
 
-.reminder-icon {
-  font-size: 36px;
+.reminder-icon-img {
   width: 48px;
   height: 48px;
   display: flex;
@@ -410,6 +415,7 @@ onUnmounted(() => {
   justify-content: center;
   background: var(--bg-secondary);
   border-radius: var(--radius-md);
+  padding: 8px;
 }
 
 .reminder-info {
@@ -457,7 +463,22 @@ onUnmounted(() => {
 }
 
 .empty-icon {
-  font-size: 64px;
+  width: 64px;
+  height: 64px;
   margin-bottom: var(--spacing-md);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.select-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 </style>

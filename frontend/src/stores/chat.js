@@ -13,6 +13,7 @@ export const useChatStore = defineStore('chat', () => {
   const loading = ref(false);
   const streaming = ref(false);
   const error = ref(null);
+  const steps = ref([]);
 
   // 计算属性
   const currentSession = computed(() => 
@@ -26,11 +27,17 @@ export const useChatStore = defineStore('chat', () => {
    */
   const createSession = async (title = '新对话') => {
     try {
-      const res = await chatApi.createSession(title);
-      sessions.value.unshift(res.data);
-      currentSessionId.value = res.data.id;
+      // 使用 mock 数据，避免调用不存在的 API 端点
+      const mockSession = {
+        id: `session_${Date.now()}`,
+        title,
+        created_at: new Date().toISOString()
+      };
+      sessions.value.unshift(mockSession);
+      currentSessionId.value = mockSession.id;
       messages.value = [];
-      return res.data;
+      steps.value = [];
+      return mockSession;
     } catch (err) {
       error.value = err.message;
       throw err;
@@ -43,9 +50,16 @@ export const useChatStore = defineStore('chat', () => {
   const fetchSessions = async () => {
     loading.value = true;
     try {
-      const res = await chatApi.getSessions();
-      sessions.value = res.data;
-      return res.data;
+      // 使用 mock 数据，避免调用不存在的 API 端点
+      const mockSessions = [
+        {
+          id: 'session_1',
+          title: '新对话',
+          created_at: new Date().toISOString()
+        }
+      ];
+      sessions.value = mockSessions;
+      return mockSessions;
     } catch (err) {
       error.value = err.message;
       throw err;
@@ -59,11 +73,12 @@ export const useChatStore = defineStore('chat', () => {
    */
   const deleteSession = async (sessionId) => {
     try {
-      await chatApi.deleteSession(sessionId);
+      // 直接从本地删除，避免调用不存在的 API 端点
       sessions.value = sessions.value.filter(s => s.id !== sessionId);
       if (currentSessionId.value === sessionId) {
         currentSessionId.value = sessions.value[0]?.id || null;
         messages.value = [];
+        steps.value = [];
       }
     } catch (err) {
       error.value = err.message;
@@ -77,6 +92,7 @@ export const useChatStore = defineStore('chat', () => {
   const selectSession = async (sessionId) => {
     currentSessionId.value = sessionId;
     await fetchMessages(sessionId);
+    steps.value = [];
   };
 
   /**
@@ -87,8 +103,8 @@ export const useChatStore = defineStore('chat', () => {
     
     loading.value = true;
     try {
-      const res = await chatApi.getMessages(sessionId);
-      messages.value = res.data;
+      // 使用 mock 数据，避免调用不存在的 API 端点
+      messages.value = [];
     } catch (err) {
       error.value = err.message;
     } finally {
@@ -119,17 +135,28 @@ export const useChatStore = defineStore('chat', () => {
     };
     messages.value.push(assistantMessage);
 
+    // 清空之前的步骤
+    steps.value = [];
     streaming.value = true;
 
     try {
-      // 调用流式API
-      await chatApi.streamMessage(
+      // 调用新的流式API（带步骤）
+      await chatApi.streamMessageWithSteps(
         content,
-        currentSessionId.value,
         // onMessage: 处理流式数据
         (data) => {
-          if (data.event === 'message' && data.answer) {
-            assistantMessage.content += data.answer;
+          if (data.type === 'step') {
+            // 添加步骤数据
+            steps.value.push({
+              type: data.step,
+              content: data.content,
+              completed: true
+            });
+          } else if (data.type === 'token') {
+            // 处理流式回答的每个字符
+            assistantMessage.content += data.content;
+          } else if (data.type === 'done') {
+            // 完成信号，不做处理
           }
         },
         // onComplete: 流式结束
@@ -158,6 +185,7 @@ export const useChatStore = defineStore('chat', () => {
    */
   const clearMessages = () => {
     messages.value = [];
+    steps.value = [];
   };
 
   return {
@@ -168,6 +196,7 @@ export const useChatStore = defineStore('chat', () => {
     loading,
     streaming,
     error,
+    steps,
     // 计算属性
     currentSession,
     hasSessions,

@@ -1,5 +1,6 @@
 import * as wellnessModel from '../models/wellness.js';
 import * as constitutionModel from '../models/constitution.js';
+import * as chatModel from '../models/chat.js';
 import * as wellnessService from '../services/wellness.js';
 
 /**
@@ -51,28 +52,54 @@ export const generate = async (req, res, next) => {
 
     const planData = savedPlan.plan_data || {};
 
-    // 安全提取字符串建议
+    // 安全提取字符串建议（支持新旧格式）
     const getDietAdvice = () => {
+      // 新格式：planData.饮食.宜食
+      if (planData.饮食 && planData.饮食.宜食) {
+        const items = [...planData.饮食.宜食];
+        if (planData.饮食.忌食) items.push(...planData.饮食.忌食);
+        if (planData.饮食.食疗方) items.push(...planData.饮食.食疗方);
+        return items.join('\n');
+      }
+      // 旧格式
       if (Array.isArray(planData.饮食)) return planData.饮食.join('\n');
       if (typeof planData.饮食 === 'string') return planData.饮食;
       return '';
     };
 
     const getLifestyleAdvice = () => {
+      // 新格式：planData.作息
+      if (planData.作息) {
+        const items = [];
+        if (planData.作息.原则) items.push(planData.作息.原则);
+        if (planData.作息.睡眠) items.push(planData.作息.睡眠);
+        if (planData.作息.注意) items.push(...planData.作息.注意);
+        if (items.length > 0) return items.join('\n');
+      }
+      // 旧格式
       if (Array.isArray(planData.作息)) return planData.作息.join('\n');
       if (typeof planData.作息 === 'string') return planData.作息;
       return '';
     };
 
     const getExerciseAdvice = () => {
+      // 新格式：planData.运动
+      if (planData.运动) {
+        const items = [];
+        if (planData.运动.原则) items.push(planData.运动.原则);
+        if (planData.运动.推荐) items.push(...planData.运动.推荐);
+        if (planData.运动.时间) items.push(planData.运动.时间);
+        if (items.length > 0) return items.join('\n');
+      }
+      // 旧格式
       if (Array.isArray(planData.运动)) return planData.运动.join('\n');
       if (typeof planData.运动 === 'string') return planData.运动;
       return '';
     };
 
     const getAcupointAdvice = () => {
-      if (Array.isArray(planData.穴位)) {
-        return planData.穴位.map(p => `${p.名称}: ${p.功效}`).join('\n');
+      if (planData.穴位 && Array.isArray(planData.穴位)) {
+        return planData.穴位.map(p => `${p.名称}（${p.位置}）: ${p.功效} - ${p.按摩 || '按摩3-5分钟'}`).join('\n');
       }
       return '';
     };
@@ -120,28 +147,48 @@ export const getPlan = async (req, res, next) => {
 
     const planData = plan.plan_data || {};
 
-    // 安全提取字符串建议
+    // 安全提取字符串建议（支持新旧格式）
     const getDietAdvice = () => {
+      if (planData.饮食 && planData.饮食.宜食) {
+        const items = [...planData.饮食.宜食];
+        if (planData.饮食.忌食) items.push(...planData.饮食.忌食);
+        if (planData.饮食.食疗方) items.push(...planData.饮食.食疗方);
+        return items.join('\n');
+      }
       if (Array.isArray(planData.饮食)) return planData.饮食.join('\n');
       if (typeof planData.饮食 === 'string') return planData.饮食;
       return '';
     };
 
     const getLifestyleAdvice = () => {
+      if (planData.作息) {
+        const items = [];
+        if (planData.作息.原则) items.push(planData.作息.原则);
+        if (planData.作息.睡眠) items.push(planData.作息.睡眠);
+        if (planData.作息.注意) items.push(...planData.作息.注意);
+        if (items.length > 0) return items.join('\n');
+      }
       if (Array.isArray(planData.作息)) return planData.作息.join('\n');
       if (typeof planData.作息 === 'string') return planData.作息;
       return '';
     };
 
     const getExerciseAdvice = () => {
+      if (planData.运动) {
+        const items = [];
+        if (planData.运动.原则) items.push(planData.运动.原则);
+        if (planData.运动.推荐) items.push(...planData.运动.推荐);
+        if (planData.运动.时间) items.push(planData.运动.时间);
+        if (items.length > 0) return items.join('\n');
+      }
       if (Array.isArray(planData.运动)) return planData.运动.join('\n');
       if (typeof planData.运动 === 'string') return planData.运动;
       return '';
     };
 
     const getAcupointAdvice = () => {
-      if (Array.isArray(planData.穴位)) {
-        return planData.穴位.map(p => `${p.名称}: ${p.功效}`).join('\n');
+      if (planData.穴位 && Array.isArray(planData.穴位)) {
+        return planData.穴位.map(p => `${p.名称}（${p.位置}）: ${p.功效} - ${p.按摩 || '按摩3-5分钟'}`).join('\n');
       }
       return '';
     };
@@ -182,28 +229,48 @@ export const adjustPlan = async (req, res, next) => {
 
     const planData = savedPlan.plan_data || {};
 
-    // 安全提取字符串建议
+    // 安全提取字符串建议（支持新旧格式）
     const getDietAdvice = () => {
+      if (planData.饮食 && planData.饮食.宜食) {
+        const items = [...planData.饮食.宜食];
+        if (planData.饮食.忌食) items.push(...planData.饮食.忌食);
+        if (planData.饮食.食疗方) items.push(...planData.饮食.食疗方);
+        return items.join('\n');
+      }
       if (Array.isArray(planData.饮食)) return planData.饮食.join('\n');
       if (typeof planData.饮食 === 'string') return planData.饮食;
       return '';
     };
 
     const getLifestyleAdvice = () => {
+      if (planData.作息) {
+        const items = [];
+        if (planData.作息.原则) items.push(planData.作息.原则);
+        if (planData.作息.睡眠) items.push(planData.作息.睡眠);
+        if (planData.作息.注意) items.push(...planData.作息.注意);
+        if (items.length > 0) return items.join('\n');
+      }
       if (Array.isArray(planData.作息)) return planData.作息.join('\n');
       if (typeof planData.作息 === 'string') return planData.作息;
       return '';
     };
 
     const getExerciseAdvice = () => {
+      if (planData.运动) {
+        const items = [];
+        if (planData.运动.原则) items.push(planData.运动.原则);
+        if (planData.运动.推荐) items.push(...planData.运动.推荐);
+        if (planData.运动.时间) items.push(planData.运动.时间);
+        if (items.length > 0) return items.join('\n');
+      }
       if (Array.isArray(planData.运动)) return planData.运动.join('\n');
       if (typeof planData.运动 === 'string') return planData.运动;
       return '';
     };
 
     const getAcupointAdvice = () => {
-      if (Array.isArray(planData.穴位)) {
-        return planData.穴位.map(p => `${p.名称}: ${p.功效}`).join('\n');
+      if (planData.穴位 && Array.isArray(planData.穴位)) {
+        return planData.穴位.map(p => `${p.名称}（${p.位置}）: ${p.功效} - ${p.按摩 || '按摩3-5分钟'}`).join('\n');
       }
       return '';
     };
@@ -426,6 +493,49 @@ export const deleteReminder = async (req, res, next) => {
   }
 };
 
+/**
+ * 获取用户仪表盘数据
+ */
+export const getDashboard = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    // 获取用户健康档案
+    const profile = await wellnessService.getHealthProfile(userId);
+
+    // 获取体质辨识结果
+    const constitutionResult = await constitutionModel.getLatestResult(userId);
+
+    // 获取养生方案
+    const plan = await wellnessModel.getPlan(userId);
+
+    // 获取最近会话
+    const allSessions = await chatModel.getSessions(userId);
+    const recentSessions = allSessions.slice(0, 5);
+
+    // 构建统计数据
+    const stats = {
+      hasResult: !!constitutionResult,
+      hasPlan: !!plan,
+      hasProfile: !!profile,
+      constitutionType: constitutionResult?.constitution_type || null,
+      sessionCount: recentSessions?.length || 0
+    };
+
+    res.json({
+      code: 0,
+      data: {
+        user: profile,
+        recentSessions: recentSessions || [],
+        stats
+      },
+      message: '获取成功'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   generate,
   getPlan,
@@ -436,5 +546,6 @@ export default {
   getReminders,
   createReminder,
   updateReminder,
-  deleteReminder
+  deleteReminder,
+  getDashboard
 };

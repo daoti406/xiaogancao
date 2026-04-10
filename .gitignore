@@ -58,3 +58,19 @@ frontend/dist-ssr/
 coverage/
 .temp/
 .cache/
+
+# =====================
+# RAG模型和数据
+# =====================
+xiaogancao-rag/models/
+xiaogancao-rag/chroma_db/
+xiaogancao-rag/chroma_knowledge_db/
+xiaogancao-rag/__pycache__/
+xiaogancao-rag/.gradio/
+
+# =====================
+# 文档和临时文件
+# =====================
+架构/
+启动/
+PROJECT_ANALYSIS.md

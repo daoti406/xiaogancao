@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- 叶子/植物图案 - 代表起居养生 -->
+  <!-- 主茎 -->
+  <path d="M32 56V32" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左侧叶子 -->
+  <path d="M32 38c-8-2-14-8-12-16" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 右侧叶子 -->
+  <path d="M32 32c8-2 14-8 12-16" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 左侧第二片叶子 -->
+  <path d="M32 46c-6-1-10-6-9-12" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 右侧第二片叶子 -->
+  <path d="M32 42c6-1 10-6 9-12" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 顶部叶子 -->
+  <path d="M32 32c-3-6-3-12 0-16" stroke="#4A7C59" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 太阳/阳气 -->
+  <circle cx="48" cy="16" r="6" stroke="#4A7C59" stroke-width="2" fill="none"/>
+  <path d="M48 6v-3M48 26v3M38 16h-3M56 16h3" stroke="#4A7C59" stroke-width="2" stroke-linecap="round"/>
+</svg>
