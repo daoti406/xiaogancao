@@ -4,25 +4,11 @@
       <p>暂无步骤数据</p>
     </div>
     <div v-else class="steps-container">
-      <div 
-        v-for="(step, index) in steps" 
-        :key="index"
-        class="step-item"
-        :class="{ 'step-completed': step.completed }"
-      >
-        <div class="step-icon">
-          <span v-if="step.type === 'intent'">🧠</span>
-          <span v-else-if="step.type === 'retrieve'">🔍</span>
-          <span v-else-if="step.type === 'final'">📝</span>
-          <span v-else>✨</span>
-        </div>
+      <div class="step-item step-completed">
+        <div class="step-icon">🧠</div>
         <div class="step-content">
-          <div class="step-title">
-            {{ getStepTitle(step.type) }}
-          </div>
-          <div class="step-description">
-            {{ step.content }}
-          </div>
+          <div class="step-title">思考过程</div>
+          <div class="step-description">正在分析您的问题，为您提供专业的中医养生建议...</div>
         </div>
       </div>
     </div>
@@ -38,15 +24,6 @@ const props = defineProps({
     default: () => []
   }
 });
-
-const getStepTitle = (type) => {
-  const titles = {
-    intent: '意图识别',
-    retrieve: '知识库检索',
-    final: '生成答案'
-  };
-  return titles[type] || '处理中';
-};
 </script>
 
 <style scoped>

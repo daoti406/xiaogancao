@@ -29,8 +29,9 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { submit as submitConstitution } from '@/api/constitution';
+import { useRouter } from 'vue-router';
 
 // 问卷问题（与后端保持一致）
 const questions = ref([
@@ -55,19 +56,20 @@ const questions = ref([
 
 const answers = ref(new Array(questions.value.length).fill(null));
 const result = ref(null);
+const router = useRouter();
 
 const allAnswered = computed(() => answers.value.every(v => v !== null));
 
 const submit = async () => {
-  const token = localStorage.getItem('token');
   try {
-    const response = await axios.post('/api/constitution', 
-      { answers: answers.value },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    // 处理结果
+    ElMessage.loading('正在提交问卷，请稍候...');
+    const response = await submitConstitution(answers.value);
+    ElMessage.success('问卷提交成功！');
+    // 跳转到结果页面
+    router.push('/constitution/report');
   } catch (error) {
-    console.error(error);
+    console.error('问卷提交失败:', error);
+    ElMessage.error('请求资源失败，请稍后重试');
   }
 };
 

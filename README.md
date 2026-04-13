@@ -1,7 +1,7 @@
 # 小甘草—AI中医养生顾问
 
 <div align="center">
-  <img src="C:\Users\daoti\Desktop\小甘草\frontend\src\assets\title-logo.png" alt="小甘草" width="200">
+  <img src="frontend/src/assets/title-logo.png" alt="小甘草" width="200">
   
   <h3>您的中医养生AI助手</h3>
   
@@ -20,11 +20,12 @@
 
 | 功能 | 描述 |
 |------|------|
-| 体质辨识 | 基于《中医体质分类与判定》标准，通过17道问卷精准识别九种体质类型 |
-| AI智能问诊 | 集成Dify工作流，支持流式对话，提供温暖专业的中医养生咨询服务 |
+| 体质辨识 | 基于《中医体质分类与判定》标准，通过17道问卷精准识别九种体质类型，支持分组答题和实时进度显示 |
+| AI智能问诊 | 集成Dify工作流，支持流式对话，提供温暖专业的中医养生咨询服务，显示AI思考过程 |
 | 养生方案 | 根据体质生成个性化养生方案，涵盖饮食、作息、运动、穴位保健等方面 |
-| 健康档案 | 记录用户体质数据、对话历史，形成完整的健康档案 |
+| 健康档案 | 记录用户体质数据、对话历史，形成完整的健康档案，支持个人资料编辑和头像上传 |
 | 养生提醒 | 定时提醒功能，帮助用户坚持健康习惯 |
+| 中医养生社区 | 提供中医养生讨论社区，用户可以发帖、评论、分享养生心得 |
 
 ### 技术亮点
 
@@ -33,6 +34,8 @@
 - 响应式设计，支持PC端和移动端
 - 模块化设计，易于扩展至小程序端
 - Dify工作流集成，支持知识库检索与AI推理
+- 玻璃态设计，现代UI风格
+- 轮播图首页，展示中医相关内容
 
 ## 技术栈
 
@@ -49,6 +52,13 @@
 - **Express** - Web应用框架
 - **Supabase** - 后端即服务（数据库、认证）
 - **Dify** - LLM应用开发平台
+
+### Agent服务
+- **Python** - 主要开发语言
+- **LangChain** - AI应用框架
+- **LangGraph** - Agent工作流
+- **ChromaDB** - 向量数据库
+- **Ollama** - 本地LLM服务
 
 ### 数据库
 - **PostgreSQL** - 关系型数据库（通过Supabase）
@@ -89,8 +99,19 @@ xiaogancao/
 │   ├── index.js             # 入口文件
 │   └── package.json
 │
-├── docs/                     # 文档目录
-└── README.md
+├── agent-service/            # Agent服务
+│   ├── agents/              # Agent定义
+│   ├── tools/               # 工具函数
+│   ├── main_langchain.py    # 主程序
+│   └── requirements.txt     # Python依赖
+│
+├── xiaogancao-rag/          # RAG服务
+│   ├── api.py               # API接口
+│   ├── build_knowledge_base.py
+│   ├── rag_query.py         # RAG查询
+│   └── requirement          # 依赖文件
+│
+└── docs/                     # 文档目录
 ```
 
 ## 快速开始
@@ -98,6 +119,7 @@ xiaogancao/
 ### 环境要求
 
 - Node.js >= 18.0.0
+- Python >= 3.8
 - pnpm >= 8.0.0 (推荐) 或 npm
 
 ### 安装依赖
@@ -110,6 +132,10 @@ pnpm install
 # 安装后端依赖
 cd ../backend
 pnpm install
+
+# 安装Agent服务依赖
+cd ../agent-service
+pip install -r requirements.txt
 ```
 
 ### 环境配置
@@ -146,6 +172,18 @@ JWT_EXPIRES_IN=7d
 VITE_API_BASE_URL=/api
 ```
 
+#### Agent服务环境变量
+
+```env
+# 高德地图API
+GAODE_API_KEY=your_gaode_api_key
+GAODE_API=https://restapi.amap.com/v3/geocode/geo
+
+# 极速数据API
+JISU_API_KEY=your_jisu_api_key
+JISU_API=http://api.jisuapi.com/jieqi/get
+```
+
 ### 数据库初始化
 
 在Supabase SQL编辑器中执行 `backend/scripts/initDatabase.js` 中生成的SQL脚本。
@@ -160,6 +198,10 @@ pnpm dev
 # 启动前端服务（新终端）
 cd frontend
 pnpm dev
+
+# 启动Agent服务（新终端）
+cd agent-service
+python main_langchain.py
 ```
 
 访问 http://localhost:5173 即可使用。
@@ -244,6 +286,46 @@ pnpm dev
 | 特禀质 | #E87CB8 |
 | 平和质 | #7CE89C |
 
+## 项目特色
+
+### 1. 智能体质辨识
+- 基于《中医体质分类与判定》标准
+- 17道专业问卷，精准识别九种体质
+- 分组答题设计，提升用户体验
+- 实时进度显示和组别小结
+
+### 2. AI智能问诊
+- 流式对话，实时响应
+- 显示AI思考过程，增强信任感
+- 支持多轮对话，上下文理解
+- 集成中医知识库，专业准确
+
+### 3. 个性化养生方案
+- 根据体质类型定制方案
+- 涵盖饮食、作息、运动、穴位等
+- 支持方案修改和调整
+- 定期提醒，帮助养成习惯
+
+### 4. 现代化UI设计
+- 玻璃态设计风格
+- 响应式布局，支持多端
+- 流畅的动画效果
+- 轮播图首页，展示中医文化
+
+### 5. 社区功能
+- 中医养生讨论社区
+- 发帖、评论、分享
+- 热门话题和活跃用户
+- 知识共享和经验交流
+
+## 安全说明
+
+本项目已经过敏感信息检查：
+- 所有API密钥和敏感信息都通过环境变量配置
+- .gitignore文件已配置，防止敏感文件被提交
+- 代码中不包含任何硬编码的密钥或密码
+- 使用.env.example文件作为配置模板
+
 ## 免责声明
 
 本平台提供的养生建议和体质辨识结果仅供参考，不构成医疗诊断或处方。中医养生建议需结合个人实际情况，如有身体不适请及时就医，遵循专业医师指导。
@@ -251,6 +333,22 @@ pnpm dev
 ## 许可证
 
 本项目采用 [MIT](LICENSE) 许可证。
+
+## 贡献指南
+
+欢迎贡献代码、报告问题或提出建议。请遵循以下步骤：
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+## 联系方式
+
+如有问题或建议，请通过以下方式联系：
+- 提交 Issue
+- 发送邮件至：your.email@example.com
 
 ---
 

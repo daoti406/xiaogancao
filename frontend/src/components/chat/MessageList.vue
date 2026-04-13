@@ -13,13 +13,16 @@
         <div class="message-role">{{ msg.role === 'user' ? '我' : '小甘草' }}</div>
         <div class="message-text" :class="{ streaming: msg.streaming }">
           <StreamingText 
-            v-if="msg.streaming || msg.role === 'assistant'" 
+            v-if="msg.streaming || msg.role === 'assistant' " 
             :content="msg.content" 
             :isStreaming="msg.streaming"
           />
           <template v-else>{{ msg.content }}</template>
         </div>
-        <!-- 不显示步骤信息，保持界面简洁 -->
+        <!-- 显示步骤信息 -->
+        <div class="message-steps" v-if="msg.role === 'assistant' && steps.length > 0">
+          <ReactSteps :steps="steps" />
+        </div>
       </div>
     </div>
     

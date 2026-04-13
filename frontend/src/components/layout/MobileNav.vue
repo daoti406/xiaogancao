@@ -28,6 +28,7 @@ const navItems = [
   { path: '/', icon: iconHome, label: '小憩' },
   { path: '/constitution', icon: iconGancao, label: '识己' },
   { path: '/chat', icon: iconFuling, label: '问安' },
+  { path: '/community', icon: iconHome, label: '社区' },
   { path: '/wellness', icon: iconGouqi, label: '养身' },
   { path: '/health', icon: iconRenshen, label: '吾斋' }
 ];

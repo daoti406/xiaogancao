@@ -68,6 +68,7 @@
   --shadow-md: 0 4px 12px rgba(44, 62, 45, 0.1);
   --shadow-lg: 0 8px 24px rgba(44, 62, 45, 0.12);
   --shadow-xl: 0 16px 48px rgba(44, 62, 45, 0.15);
+  --shadow-hover: 0 10px 25px rgba(74, 124, 89, 0.15);
 
   /* 圆角 */
   --radius-sm: 4px;
@@ -85,8 +86,8 @@
   --spacing-2xl: 48px;
 
   /* 字体 */
-  --font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
-  --font-family-serif: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', 'Arial', sans-serif;
+  --font-family-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', serif;
 
   /* 字号 */
   --font-size-xs: 12px;
@@ -97,11 +98,21 @@
   --font-size-2xl: 20px;
   --font-size-3xl: 24px;
   --font-size-4xl: 30px;
+  --font-size-5xl: 36px;
+  --font-size-6xl: 48px;
 
   /* 行高 */
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
+  --line-height-loose: 2;
+
+  /* 字重 */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
   /* 过渡 */
   --transition-fast: 0.15s ease;

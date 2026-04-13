@@ -16,6 +16,8 @@ const Chat = () => import('@/views/Chat.vue');
 const HealthProfile = () => import('@/views/HealthProfile.vue');
 const WellnessPlan = () => import('@/views/WellnessPlan.vue');
 const Reminders = () => import('@/views/Reminders.vue');
+const Community = () => import('@/views/Community.vue');
+const PostDetail = () => import('@/views/PostDetail.vue');
 
 const routes = [
   {
@@ -77,6 +79,18 @@ const routes = [
     name: 'Reminders',
     component: Reminders,
     meta: { title: '提醒管理', requiresAuth: true }
+  },
+  {
+    path: '/community',
+    name: 'Community',
+    component: Community,
+    meta: { title: '养生社区', requiresAuth: true }
+  },
+  {
+    path: '/community/post/:id',
+    name: 'PostDetail',
+    component: PostDetail,
+    meta: { title: '帖子详情', requiresAuth: true }
   },
   {
     path: '/:pathMatch(.*)*',

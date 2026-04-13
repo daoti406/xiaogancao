@@ -4,7 +4,6 @@
     <header class="app-header" v-if="showHeader">
       <Header />
     </header>
-
     <!-- 主体内容 -->
     <main class="app-main" :class="{ 'no-header': !showHeader, 'no-footer': !showFooter }">
       <router-view v-slot="{ Component }">

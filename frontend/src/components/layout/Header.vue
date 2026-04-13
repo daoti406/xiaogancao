@@ -13,13 +13,16 @@
           <span>首页</span>
         </router-link>
         <router-link to="/constitution" class="nav-item" :class="{ active: $route.path.includes('/constitution') }">
-          <img :src="iconConstitution" class=
-          "nav-icon" alt="体质" />
+          <img :src="iconConstitution" class="nav-icon" alt="体质" />
           <span>体质辨识</span>
         </router-link>
         <router-link to="/chat" class="nav-item" :class="{ active: $route.path === '/chat' }">
           <img :src="iconChat" class="nav-icon" alt="问诊" />
           <span>智能问诊</span>
+        </router-link>
+        <router-link to="/community" class="nav-item" :class="{ active: $route.path.includes('/community') }">
+          <img :src="iconCommunity" class="nav-icon" alt="社区" />
+          <span>养生社区</span>
         </router-link>
         <router-link to="/wellness" class="nav-item" :class="{ active: $route.path === '/wellness' }">
           <img :src="iconWellness" class="nav-icon" alt="养生" />
@@ -45,6 +48,10 @@
                 <el-dropdown-item command="profile">
                   <el-icon><User /></el-icon>
                   个人档案
+                </el-dropdown-item>
+                <el-dropdown-item command="community">
+                  <el-icon><ChatDotRound /></el-icon>
+                  养生社区
                 </el-dropdown-item>
                 <el-dropdown-item command="wellness">
                   <el-icon><Document /></el-icon>
@@ -75,13 +82,14 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { User, Document, Bell, SwitchButton } from '@element-plus/icons-vue';
+import { User, Document, Bell, SwitchButton, ChatDotRound } from '@element-plus/icons-vue';
 
 // 图标导入
 import logoSrc from '@/assets/title-logo.png';
 import iconHome from '@/assets/icons/gouqi.svg'; // 枸杞 - 首页
 import iconConstitution from '@/assets/icons/renshen.svg'; // 人参 - 体质辨识
 import iconChat from '@/assets/icons/gancao.svg'; // 甘草 - 智能问诊
+import iconCommunity from '@/assets/icons/chat.svg'; // 聊天 - 养生社区
 import iconWellness from '@/assets/icons/fuling.svg'; // 茯苓 - 养生方案
 import iconProfile from '@/assets/icons/herb-icon.svg'; // 草药 - 健康档案
 
@@ -102,6 +110,9 @@ const handleCommand = async (command) => {
   switch (command) {
     case 'profile':
       router.push('/health');
+      break;
+    case 'community':
+      router.push('/community');
       break;
     case 'wellness':
       router.push('/wellness');

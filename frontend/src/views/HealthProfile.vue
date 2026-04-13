@@ -23,6 +23,34 @@
       <el-button @click="editProfile">编辑资料</el-button>
     </div>
 
+    <!-- 编辑资料对话框 -->
+    <el-dialog
+      v-model="editDialogVisible"
+      title="编辑个人资料"
+      width="500px"
+    >
+      <el-form :model="editForm" label-width="80px">
+        <el-form-item label="头像">
+          <div class="avatar-upload">
+            <el-avatar :size="100" :src="editForm.avatar">
+              {{ editForm.nickname?.charAt(0) }}
+            </el-avatar>
+            <el-button type="primary" @click="uploadAvatar">更换头像</el-button>
+          </div>
+        </el-form-item>
+        <el-form-item label="昵称">
+          <el-input v-model="editForm.nickname" placeholder="请输入昵称" />
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="editForm.email" placeholder="请输入邮箱" disabled />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveProfile">保存</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 统计概览 -->
     <div class="stats-grid">
       <div class="stat-card">
@@ -169,6 +197,7 @@ import { useAuthStore } from '@/stores/auth';
 import { CONSTITUTION_INFO } from '@/data/quizQuestions';
 import RadarChart from '@/components/constitution/RadarChart.vue';
 import request from '@/api/request';
+import { ElMessage } from 'element-plus';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -180,6 +209,14 @@ const stats = ref({
   constitutionRecords: 0,
   hasPlan: false,
   healthRecords: 0
+});
+
+// 编辑资料相关
+const editDialogVisible = ref(false);
+const editForm = ref({
+  nickname: '',
+  email: '',
+  avatar: ''
 });
 
 // 健康指标数据
@@ -251,7 +288,40 @@ const fetchDashboard = async () => {
 };
 
 const editProfile = () => {
-  // TODO: 实现编辑资料功能
+  // 初始化编辑表单
+  editForm.value = {
+    nickname: authStore.user?.nickname || authStore.userName,
+    email: authStore.user?.email || '',
+    avatar: authStore.userAvatar
+  };
+  editDialogVisible.value = true;
+};
+
+const uploadAvatar = () => {
+  // 创建文件选择器
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // 创建文件URL
+      const avatarUrl = URL.createObjectURL(file);
+      editForm.value.avatar = avatarUrl;
+      ElMessage.success('头像更换成功！');
+    }
+  };
+  input.click();
+};
+
+const saveProfile = () => {
+  // 保存个人资料
+  authStore.updateUser({
+    nickname: editForm.value.nickname,
+    avatar_url: editForm.value.avatar
+  });
+  editDialogVisible.value = false;
+  ElMessage.success('个人资料保存成功！');
 };
 
 const addHealthRecord = () => {
@@ -553,6 +623,19 @@ onMounted(() => {
   margin: 0;
 }
 
+/* 头像上传样式 */
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.avatar-upload :deep(.el-avatar) {
+  background: var(--primary-color);
+  color: white;
+  font-size: 40px;
+}
+
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: 1fr;
@@ -574,6 +657,11 @@ onMounted(() => {
   
   .medication-period {
     align-self: flex-end;
+  }
+  
+  .avatar-upload {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

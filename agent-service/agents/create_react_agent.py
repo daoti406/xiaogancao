@@ -27,7 +27,7 @@ load_dotenv()
 # ========== 1. 初始化本地 LLM（Ollama）==========
 # 确保已安装 ollama 并拉取了模型，例如: ollama pull qwen2:1.5b
 # 如果使用 qwen3:8b 会比较慢，建议用小模型测试
-MODEL_NAME = "qwen2:1.5b"   # 可改为 "qwen3:8b" 或 "llama3.2:1b"
+MODEL_NAME = "qwen3:8b"   # 可改为 "qwen3:8b" 或 "llama3.2:1b"
 llm = ChatOllama(
     model=MODEL_NAME,
     temperature=0.7,
@@ -36,7 +36,7 @@ llm = ChatOllama(
 )
 
 # ========== 2. 工具列表（至少2个）==========
-tools = [get_user_constitution, generate_wellness_plan]
+tools = [get_user_constitution, generate_wellness_plan,generate_wellness_plan]
 
 # ========== 3. ReAct Prompt 模板（中医专用格式）==========
 prompt = PromptTemplate.from_template("""

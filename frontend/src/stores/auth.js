@@ -16,7 +16,17 @@ export const useAuthStore = defineStore('auth', () => {
   // 计算属性
   const isLoggedIn = computed(() => !!token.value && !!user.value);
   const userName = computed(() => user.value?.nickname || user.value?.email?.split('@')[0] || '用户');
-  const userAvatar = computed(() => user.value?.avatar_url || '');
+  const userAvatar = computed(() => {
+    if (user.value?.avatar_url) {
+      return user.value.avatar_url;
+    }
+    // 默认使用assets中的用户头像.png
+    try {
+      return new URL('@/assets/用户头像.png', import.meta.url).href;
+    } catch (e) {
+      return '';
+    }
+  });
 
   /**
    * 获取OAuth授权URL
