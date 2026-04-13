@@ -1,4 +1,4 @@
-# 小甘草—AI中医养生顾问 - 项目评估报告
+# 小甘草—AI中医养生顾问
 
 <div align="center">
   <img src="frontend/src/assets/title-logo.png" alt="小甘草" width="200">
