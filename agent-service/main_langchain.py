@@ -7,8 +7,8 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 sys.path.append(os.path.dirname(__file__))
 from langchain_ollama import ChatOllama
-from langchain.agents import AgentExecutor, create_react_agent
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
+from langchain_core.tools import Tool
 from tools.constitution import get_user_constitution
 from tools.generate_wellness_plan import generate_wellness_plan
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -23,37 +23,16 @@ llm = ChatOllama(
     base_url="http://localhost:11434",
     num_predict=512,
 )
+# 直接使用工具
 tools = [get_user_constitution, generate_wellness_plan]
+# 简单的提示模板
 prompt = PromptTemplate.from_template("""
-你是一个专业的中医养生助手，名叫小甘草。你可以使用以下工具：
+你是一个专业的中医养生助手，名叫小甘草。
 
-{tools}
+请根据用户的问题，提供专业、亲切的回答。
 
-工具名称：{tool_names}
-
-请严格按照以下格式回答（可以多步思考）：
-Question: 用户的问题
-Thought: 思考需要做什么
-Action: 工具名称（必须是 [{tool_names}] 之一）
-Action Input: 工具的输入参数（JSON格式，例如 {{"user_id": "123"}}）
-Observation: 工具返回的结果
-... (重复 Thought/Action/Observation 多次)
-Thought: 我现在知道最终答案了
-Final Answer: 对用户的最终回答（中文，亲切专业）
-
-开始！
-
-Question: {input}
-Thought: {agent_scratchpad}
-                                      """)
-agent=create_react_agent(llm,tools,prompt)
-agent_executor=AgentExecutor(
-    agent=agent,
-    tools=tools,
-    verbose=False,          # 生产环境建议关闭，调试时可开
-    max_iterations=5,
-    handle_parsing_errors=True,
-)
+用户问题：{input}
+""")
 app = FastAPI(title="小甘草 Agent 服务 (LangChain)", description="基于 LangChain ReAct Agent", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
@@ -77,10 +56,22 @@ async def health_check():
 async def chat_endpoint(request: ChatRequest):
     try:
         logger.info(f"收到请求: user_id={request.user_id}, message={request.message}")
-        full_input = f"用户ID是 {request.user_id}，问题：{request.message}"
-        # 使用 invoke 而不是 run
-        result = agent_executor.invoke({"input": full_input})
-        reply = result["output"]
+        
+        # 简单的LLM调用
+        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_core.messages import HumanMessage, SystemMessage
+        
+        # 构建聊天提示
+        chat_prompt = ChatPromptTemplate.from_messages([
+            SystemMessage(content="你是一个专业的中医养生助手，名叫小甘草。请提供专业、亲切的回答。"),
+            HumanMessage(content=request.message)
+        ])
+        
+        # 调用LLM
+        chain = chat_prompt | llm
+        result = chain.invoke({})
+        reply = result.content
+        
         logger.info(f"回复生成成功: {reply[:50]}...")
         return ChatResponse(reply=reply)
     except Exception as e:
