@@ -1,18 +1,21 @@
 const axios = require('axios');
 
-const RAG_API_URL = 'http://localhost:5001/rag/query';
+const RAG_API_URL = 'http://localhost:8000/api/chat';
 
 async function queryRAG(question) {
     try {
-        const response = await axios.post(RAG_API_URL, { question });
-        if (response.data.success) {
+        const response = await axios.post(RAG_API_URL, { 
+            user_id: 'test_user',
+            message: question 
+        });
+        if (response.data.reply) {
             return {
-                answer: response.data.answer,
-                sources: response.data.sources,
+                answer: response.data.reply,
+                sources: [],
                 success: true
             };
         } else {
-            console.error('RAG 返回错误:', response.data.error);
+            console.error('RAG 返回错误: 没有 reply 字段');
             return { success: false };
         }
     } catch (error) {

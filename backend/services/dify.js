@@ -56,7 +56,7 @@ export const sendMessage = async ({
 
   try {
     // 调用 Dify API（流式）
-    const response = await fetch(`${config.dify.apiUrl}/v1/chat-messages`, {
+    const response = await fetch(config.dify.apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
