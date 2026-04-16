@@ -112,63 +112,53 @@ export const streamMessage = (message, sessionId, onMessage, onComplete, onError
  * @param {Function} onError - 错误回调
  */
 export const streamMessageWithSteps = (message, onMessage, onComplete, onError) => {
-  // 使用代理地址，避免 CORS 问题
-  const apiUrl = '/api/chat/stream';
+  // 调用后端的chat/message接口
+  const apiUrl = '/api/chat/message';
+  const token = localStorage.getItem('xiaogancao_token');
 
   fetch(apiUrl, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
     },
     body: JSON.stringify({
-      user_id: 'user_123', // 暂时硬编码，后续从登录状态获取
-      message
+      message,
+      userId: 'user_123' // 暂时硬编码，后续从登录状态获取
     })
   })
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return response.body.getReader();
+      return response.json();
     })
-    .then(reader => {
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      const readChunk = () => {
-        reader.read().then(({ done, value }) => {
-          if (done) {
-            onComplete?.();
-            return;
+    .then(data => {
+      // 模拟流式输出
+      const reply = data.reply;
+      const sentences = reply.split(/(?<=[。！？])/);
+      
+      let index = 0;
+      const sendNextSentence = () => {
+        if (index < sentences.length) {
+          const sentence = sentences[index];
+          if (sentence.trim()) {
+            onMessage?.({
+              type: 'token',
+              content: sentence
+            });
           }
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                onMessage?.(data);
-              } catch (e) {
-                // 忽略解析错误
-              }
-            } else if (line.startsWith('data:')) {
-              try {
-                const data = JSON.parse(line.slice(5));
-                onMessage?.(data);
-              } catch (e) {
-                // 忽略解析错误
-              }
-            }
-          }
-
-          readChunk();
-        });
+          index++;
+          setTimeout(sendNextSentence, 100); // 模拟打字效果
+        } else {
+          onMessage?.({
+            type: 'done'
+          });
+          onComplete?.();
+        }
       };
-
-      readChunk();
+      
+      sendNextSentence();
     })
     .catch(err => {
       onError?.(err);

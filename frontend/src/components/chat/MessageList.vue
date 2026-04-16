@@ -6,7 +6,7 @@
           {{ userInitial }}
         </el-avatar>
         <el-avatar :size="36" v-else class="avatar-assistant">
-          <img src="@/assets/icons/chat-icon.svg" alt="" />
+          <img src="@/assets/小甘草.png" alt="小甘草" />
         </el-avatar>
       </div>
       <div class="message-content">
@@ -27,7 +27,7 @@
     </div>
     
     <div class="empty-state" v-if="messages.length === 0">
-      <img src="@/assets/icons/herb-icon.svg" class="empty-icon" alt="" />
+      <img src="@/assets/小甘草.png" class="empty-icon" alt="小甘草" />
       <h3>您好，我是小甘草</h3>
       <p>您的中医养生AI助手，有什么可以帮您的吗？</p>
       <div class="suggestions">

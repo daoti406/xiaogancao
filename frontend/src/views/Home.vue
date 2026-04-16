@@ -89,21 +89,84 @@
               {{ constitutionType }}
             </div>
             <div class="constitution-desc">您的体质类型</div>
+            <div class="constitution-info">
+              <div class="info-item">
+                <span class="info-label">主要特征：</span>
+                <span class="info-value">{{ CONSTITUTION_INFO[constitutionType]?.characteristics?.join('、') || '暂无数据' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">推荐饮食：</span>
+                <span class="info-value">{{ CONSTITUTION_INFO[constitutionType]?.diet?.join('、') || '暂无数据' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">应避免：</span>
+                <span class="info-value">{{ CONSTITUTION_INFO[constitutionType]?.avoid?.join('、') || '暂无数据' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">推荐运动：</span>
+                <span class="info-value">{{ getRecommendedExercise(constitutionType) }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">日常注意：</span>
+                <span class="info-value">{{ getDailyTips(constitutionType) }}</span>
+              </div>
+            </div>
             <div class="card-actions">
               <el-button size="small" @click.stop="goToConstitution">重新辨识</el-button>
               <el-button size="small" type="primary" @click.stop="goToWellness">查看方案</el-button>
+              <el-button size="small" @click.stop="showConstitutionDetails">详细信息</el-button>
             </div>
           </div>
           <div class="card-left" v-else>
-            <div class="constitution-type">未辨识</div>
+            <div class="constitution-type">暂未进行测试体质</div>
             <div class="constitution-desc">完成体质辨识，获取个性化养生方案</div>
             <el-button type="primary" @click="goToConstitution">开始体质辨识</el-button>
           </div>
           <div class="card-right">
-            <img v-if="hasConstitution" :src="CONSTITUTION_INFO[constitutionType]?.icon || '/src/assets/icons/constitution.svg'" class="constitution-icon" alt="" />
-            <img v-else src="@/assets/icons/constitution.svg" class="constitution-icon" alt="" />
+            <!-- 移除可能加载失败的图片 -->
           </div>
         </div>
+
+        <!-- 体质详细信息对话框 -->
+        <el-dialog
+          v-model="dialogVisible"
+          :title="constitutionType + ' 详细信息'"
+          width="600px"
+          center
+        >
+          <div class="constitution-details">
+            <div class="detail-section">
+              <h4>体质特征</h4>
+              <p>{{ CONSTITUTION_INFO[constitutionType]?.characteristics?.join('、') || '暂无数据' }}</p>
+            </div>
+            <div class="detail-section">
+              <h4>推荐饮食</h4>
+              <p>{{ CONSTITUTION_INFO[constitutionType]?.diet?.join('、') || '暂无数据' }}</p>
+            </div>
+            <div class="detail-section">
+              <h4>应避免食物</h4>
+              <p>{{ CONSTITUTION_INFO[constitutionType]?.avoid?.join('、') || '暂无数据' }}</p>
+            </div>
+            <div class="detail-section">
+              <h4>推荐运动</h4>
+              <p>{{ getRecommendedExercise(constitutionType) }}</p>
+            </div>
+            <div class="detail-section">
+              <h4>日常注意事项</h4>
+              <p>{{ getDailyTips(constitutionType) }}</p>
+            </div>
+            <div class="detail-section">
+              <h4>养生建议</h4>
+              <p>{{ getWellnessAdvice(constitutionType) }}</p>
+            </div>
+          </div>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="dialogVisible = false">关闭</el-button>
+              <el-button type="primary" @click="goToWellness">查看完整方案</el-button>
+            </span>
+          </template>
+        </el-dialog>
 
         <!-- 功能区网格布局 -->
         <div class="dashboard-grid">
@@ -422,8 +485,8 @@ import { useConstitutionStore } from '@/stores/constitution';
 import { CONSTITUTION_INFO } from '@/data/quizQuestions';
 import { getCurrentTerm, getCurrentAdvice } from '@/utils/solarTerms';
 import { searchNearbyTCM, getUserLocation, getCityByLocation, isAMapConfigured } from '@/utils/amap';
-import { Bell, Plus, ChatDotRound, Location, ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import { Bell, Plus, ChatDotRound, Location, ArrowLeft, ArrowRight, InfoFilled } from '@element-plus/icons-vue';
+import { ElMessage, ElDialog } from 'element-plus';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -449,31 +512,37 @@ const banners = [
     title: '小甘草',
     subtitle: 'AI中医养生顾问',
     description: '融合千年中医智慧与现代AI技术，为您提供个性化、温暖、专业的健康管理服务',
-    image: new URL('@/assets/首页背景图.jpg', import.meta.url).href
-  },
-  {
-    title: '春季养生',
-    subtitle: '顺应天时调养身心',
-    description: '春季万物复苏，正是养肝护肝的好时节。多食绿色蔬菜，保持心情舒畅，适当运动',
-    image: new URL('@/assets/hero.png', import.meta.url).href
+    image: new URL('@/assets/轮播图/首页背景图.jpg', import.meta.url).href
   },
   {
     title: '体质辨识',
     subtitle: '了解您的体质类型',
     description: '基于中医九种体质理论，通过科学问卷精准识别您的体质，提供个性化养生方案',
-    image: new URL('@/assets/首页背景图.jpg', import.meta.url).href
+    image: new URL('@/assets/轮播图/体质辨识.jpg', import.meta.url).href
   },
   {
     title: '智能问诊',
     subtitle: '24小时在线中医咨询',
     description: 'AI助手随时为您解答养生疑问，提供专业的中医养生建议和健康指导',
-    image: new URL('@/assets/hero.png', import.meta.url).href
+    image: new URL('@/assets/轮播图/智能问诊.jpg', import.meta.url).href
+  },
+  {
+    title: '养生方案',
+    subtitle: '个性化养生指导',
+    description: '根据您的体质类型，定制专属的饮食、运动和生活方式建议',
+    image: new URL('@/assets/轮播图/养生方案.jpg', import.meta.url).href
   },
   {
     title: '养生社区',
     subtitle: '与志同道合的朋友交流',
     description: '分享养生心得，交流中医智慧，获取更多实用的养生经验和建议',
-    image: new URL('@/assets/首页背景图.jpg', import.meta.url).href
+    image: new URL('@/assets/轮播图/养生社区.jpg', import.meta.url).href
+  },
+  {
+    title: '健康档案',
+    subtitle: '记录您的健康历程',
+    description: '跟踪健康数据，记录体质变化，为您的健康管理提供科学依据',
+    image: new URL('@/assets/轮播图/健康档案.jpg', import.meta.url).href
   }
 ];
 
@@ -755,6 +824,60 @@ const healthTips = [
   { icon: new URL('@/assets/icons/sleep-icon.svg', import.meta.url).href, title: '夜间休息', desc: '23点前入睡' },
   { icon: new URL('@/assets/icons/exercise-icon.svg', import.meta.url).href, title: '适度运动', desc: '每周3-5次运动' }
 ];
+
+// 推荐运动
+const getRecommendedExercise = (constitution) => {
+  const exercises = {
+    '阳虚质': '散步、太极拳、八段锦等温和运动，避免过度出汗',
+    '阴虚质': '瑜伽、太极、冥想等舒缓运动，避免剧烈运动',
+    '气虚质': '散步、慢跑、太极等适度运动，避免过度劳累',
+    '痰湿质': '有氧运动如快走、游泳、羽毛球等，促进湿气排出',
+    '湿热质': '游泳、瑜伽、太极等清爽运动，避免高温环境',
+    '血瘀质': '快走、太极拳、按摩等促进血液循环的运动',
+    '气郁质': '散步、瑜伽、舞蹈等放松心情的运动',
+    '特禀质': '温和的运动如太极、散步，避免剧烈运动',
+    '平和质': '各种运动都适宜，保持适度即可'
+  };
+  return exercises[constitution] || '根据个人情况选择合适的运动';
+};
+
+// 日常注意事项
+const getDailyTips = (constitution) => {
+  const tips = {
+    '阳虚质': '注意保暖，尤其是腰腹部和足部，避免贪凉',
+    '阴虚质': '保持充足睡眠，避免熬夜，注意滋阴润燥',
+    '气虚质': '避免过度劳累，保持规律作息，注意休息',
+    '痰湿质': '保持环境干燥，避免久坐，注意饮食清淡',
+    '湿热质': '保持皮肤清洁，避免辛辣刺激食物，注意清热',
+    '血瘀质': '保持情绪舒畅，避免久坐，注意保暖',
+    '气郁质': '保持心情舒畅，多参加社交活动，避免独处',
+    '特禀质': '避免接触过敏源，保持环境清洁，增强体质',
+    '平和质': '保持良好的生活习惯，维持健康状态'
+  };
+  return tips[constitution] || '保持健康的生活方式';
+};
+
+// 详细信息对话框
+const dialogVisible = ref(false);
+const showConstitutionDetails = () => {
+  dialogVisible.value = true;
+};
+
+// 养生建议
+const getWellnessAdvice = (constitution) => {
+  const advice = {
+    '阳虚质': '阳虚体质的人应注重温阳散寒，可适当食用温热性食物，如羊肉、狗肉、桂圆等。同时注意保暖，尤其是腰腹部和足部。适当进行温和的运动，如散步、太极拳等。',
+    '阴虚质': '阴虚体质的人应注重滋阴润燥，可适当食用滋阴食物，如银耳、百合、鸭肉、梨等。保持充足睡眠，避免熬夜。适当进行舒缓的运动，如瑜伽、太极等。',
+    '气虚质': '气虚体质的人应注重补气健脾，可适当食用补气食物，如山药、黄芪、大枣、鸡肉等。避免过度劳累，保持规律作息。适当进行适度的运动，如散步、慢跑等。',
+    '痰湿质': '痰湿体质的人应注重祛湿化痰，可适当食用祛湿食物，如冬瓜、萝卜、薏米、荷叶茶等。保持环境干燥，避免久坐。适当进行有氧运动，如快走、游泳等。',
+    '湿热质': '湿热体质的人应注重清热利湿，可适当食用清热食物，如绿豆、苦瓜、莲藕、冬瓜等。保持皮肤清洁，避免辛辣刺激食物。适当进行清爽的运动，如游泳、瑜伽等。',
+    '血瘀质': '血瘀体质的人应注重活血化瘀，可适当食用活血化瘀食物，如山楂、玫瑰花、黑豆、红糖等。保持情绪舒畅，避免久坐。适当进行促进血液循环的运动，如快走、太极拳等。',
+    '气郁质': '气郁体质的人应注重疏肝解郁，可适当食用疏肝食物，如玫瑰花茶、柑橘、佛手、菊花等。保持心情舒畅，多参加社交活动。适当进行放松心情的运动，如散步、瑜伽、舞蹈等。',
+    '特禀质': '特禀体质的人应注重增强体质，避免接触过敏源，可适当食用增强体质的食物，如蜂蜜、大枣、胡萝卜等。保持环境清洁，适当进行温和的运动，如太极、散步等。',
+    '平和质': '平和体质的人应保持良好的生活习惯，均衡饮食，适当运动，保持心情舒畅，维持健康状态。'  
+  };
+  return advice[constitution] || '保持健康的生活方式，定期体检，预防疾病。';
+};
 
 const startChat = () => authStore.isLoggedIn ? router.push('/chat') : router.push('/auth?redirect=/chat');
 const startConstitution = () => authStore.isLoggedIn ? router.push('/constitution') : router.push('/auth?redirect=/constitution');
@@ -1100,7 +1223,7 @@ onBeforeUnmount(() => {
 /* 节气养生提示 */
 .solar-term-tip {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--spacing-md);
   background: linear-gradient(135deg, #F0F7F4, #E8F0EA);
   padding: var(--spacing-lg) var(--spacing-xl);
@@ -1108,13 +1231,16 @@ onBeforeUnmount(() => {
   margin-bottom: var(--spacing-xl);
   color: var(--primary-color);
   font-size: var(--font-size-md);
+  line-height: 1.6;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
+  flex-wrap: wrap;
 }
 
 .solar-term-tip .el-icon {
   font-size: var(--font-size-xl);
   color: var(--secondary-color);
+  margin-top: 4px;
 }
 
 /* 体质卡片 */
@@ -1170,6 +1296,38 @@ onBeforeUnmount(() => {
   line-height: 1.6;
 }
 
+.constitution-info {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: var(--spacing-sm);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-right: var(--spacing-sm);
+  min-width: 80px;
+}
+
+.info-value {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex: 1;
+}
+
 .card-actions {
   display: flex;
   gap: var(--spacing-md);
@@ -1187,6 +1345,47 @@ onBeforeUnmount(() => {
 
 .constitution-card:hover .constitution-icon {
   transform: scale(1.1) rotate(5deg);
+}
+
+/* 体质详细信息对话框 */
+.constitution-details {
+  padding: var(--spacing-lg);
+}
+
+.detail-section {
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detail-section h4 {
+  color: var(--primary-color);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.detail-section h4::before {
+  content: '•';
+  color: var(--primary-color);
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+}
+
+.detail-section p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: var(--font-size-md);
+  margin: 0;
 }
 
 /* 功能区网格布局 */

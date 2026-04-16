@@ -7,7 +7,7 @@
         type="textarea"
         :rows="1"
         :autosize="{ minRows: 1, maxRows: 4 }"
-        placeholder="输入您的健康问题..."
+        placeholder="您今天感觉如何？都可以和小甘草谈一谈哦~"
         :disabled="disabled || sending"
         @keydown.enter.exact="handleEnter"
         @keydown.enter.shift.exact="() => {}"
